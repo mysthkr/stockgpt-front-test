@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
 import useSWR from "swr";
+import router from 'next/router';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -17,9 +18,11 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 //   maker_id: 'maker_id_value'
 // }
 
+
+
 const Grocery: NextPage = () => {
   const { data, error } = useSWR(
-    "http://localhost:3010/api/v1/groceries",
+    `http://localhost:3010/api/v1/groceries/${router.query.id}`,
     fetcher
   );
 
@@ -27,6 +30,8 @@ const Grocery: NextPage = () => {
   if (!data) return <div>Loading...</div>;
 
   console.log(data);
+
+  console.log(router.query.id);
 
   return (
     <div >

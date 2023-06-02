@@ -35,6 +35,8 @@ const Login = () => {
         })
         .then(function (response) {
           // Cookieにトークンをセットしています
+          console.log(response.headers);
+          console.log(response);
           Cookies.set("uid", response.headers["uid"]);
           Cookies.set("client", response.headers["client"]);
           Cookies.set("access-token", response.headers["access-token"]);
@@ -95,3 +97,5 @@ const Login = () => {
     </Container>
   );
 };
+
+export default Login;

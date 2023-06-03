@@ -16,7 +16,7 @@ const Login = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const axiosInstance = axios.create({
@@ -35,6 +35,8 @@ const Login = () => {
         })
         .then(function (response) {
           // Cookieにトークンをセットしています
+          console.log(response.headers);
+          console.log(response);
           Cookies.set("uid", response.headers["uid"]);
           Cookies.set("client", response.headers["client"]);
           Cookies.set("access-token", response.headers["access-token"]);
@@ -95,3 +97,5 @@ const Login = () => {
     </Container>
   );
 };
+
+export default Login;

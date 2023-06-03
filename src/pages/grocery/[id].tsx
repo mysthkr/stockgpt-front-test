@@ -4,38 +4,20 @@ import React from "react";
 import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
 import useSWR from "swr";
 import router from 'next/router';
+import { withAuthServerSideProps } from "lib/auth";
+import { GetServerSideProps } from "next";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-// const Grocery = {
-//   id: "number",
-//   picture: 'picture_url',
-//   created_at: 'creation_date',
-//   updated_at: 'update_date',
-//   category_product_id: 'category_product_id_value',
-//   sub_category_product_id: 'sub_category_product_id_value',
-//   item_id: 'item_id_value',
-//   maker_id: 'maker_id_value'
-// }
 
+export const getServerSideProps: GetServerSideProps =
+  withAuthServerSideProps(`grocery/${router.query.id}`);
 
-
-const Grocery: NextPage = () => {
-  const { data, error } = useSWR(
-    `http://localhost:3010/api/v1/groceries/${router.query.id}`,
-    fetcher
-  );
-
-  if (error) return <div>An error has occurred.</div>;
-  if (!data) return <div>Loading...</div>;
-
-  console.log(data);
-
-  console.log(router.query.id);
-
+const Grocery = (props: any) => {
   return (
     <div >
-      {data.data.map((grocery: any) => (
+      console.log(props)
+      {props.data((grocery: any) => (
         <li className='p-4' key={grocery.id}>
           <p>ID: {grocery.id}</p>
           <p>Created at: {grocery.created_at}</p>
@@ -44,7 +26,7 @@ const Grocery: NextPage = () => {
           <p>Sub Category Grocery ID: {grocery.sub_category_grocery_id}</p>
           <p>Item ID: {grocery.item_id}</p>
           <p>Maker ID: {grocery.maker_id}</p>
-          <Link href={`http://localhost:3000/api/v1/groceries/${grocery.id}`}>Show</Link>
+          <Link href={`http://localhost:3000/api/v1/grocert`}>Show</Link>
         </li>
       ))}
     </div>

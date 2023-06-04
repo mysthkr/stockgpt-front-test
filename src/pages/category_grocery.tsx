@@ -10,6 +10,8 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export const getServerSideProps: GetServerSideProps =
   withAuthServerSideProps("category_groceries");
 
+
+
 const CategoryGrocery = (props: any) => {
   return (
     <div >

@@ -18,10 +18,7 @@ const CategoryGrocery = (props: any) => {
           <p>ID: {category_grocery.id}</p>
           <p>Created at: {category_grocery.created_at}</p>
           <p>Updated at: {category_grocery.updated_at}</p>
-          <p>Category Grocery ID: {category_grocery.category_category_grocery_id}</p>
-          <p>Sub Category Grocery ID: {category_grocery.sub_category_category_grocery_id}</p>
-          <p>Item ID: {category_grocery.item_id}</p>
-          <p>Maker ID: {category_grocery.maker_id}</p>
+          <p>Name: {category_grocery.name}</p>
           <Link href={`http://localhost:3000/category_grocery/${category_grocery.id}`}>Show</Link>
         </li>
       ))}

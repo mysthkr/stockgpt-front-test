@@ -12,6 +12,10 @@ const colors = {
   black: '#000000',
   white: '#ffffff',
   text: '#000000',
+  headerMain: '#ffe5b4',
+  globalNavigator: '#ff7f50',
+  textColor: '#4b4b4b',
+  grayBack: '#f4f4f4',
 } as const
 
 

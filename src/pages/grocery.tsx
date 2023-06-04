@@ -4,6 +4,7 @@ import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, Promis
 import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
+import { Skeleton } from '@mui/material';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -17,9 +18,9 @@ const Grocery: NextPage = () => {
   );
 
   if (error) return <div>An error has occurred.</div>;
-  if (!data) return <div>Loading...</div>;
+  if (!data) return <Skeleton>Loading...</Skeleton>;
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div >
@@ -31,7 +32,6 @@ const Grocery: NextPage = () => {
           <p>Category Grocery ID: {grocery.category_grocery_id}</p>
           <p>Sub Category Grocery ID: {grocery.sub_category_grocery_id}</p>
           <p>Item ID: {grocery.item_id}</p>
-          <p>Maker ID: {grocery.maker_id}</p>
           <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
         </li>
       ))}

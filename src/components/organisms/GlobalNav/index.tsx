@@ -16,9 +16,9 @@ import BadgeIconButton from 'components/molecules/BadgeIconButton'
 import { useAuthContext } from 'contexts/AuthContext'
 
 // ヘッダーのルート
-const HeaderRoot = styled.header`
-  height: 60px;
-  background-color: #ffe5b4
+const GlobalNavRoot = styled.header`
+  height: 50px;
+  background-color: #ff7f50
 `
 
 // ナビゲーション
@@ -47,53 +47,25 @@ const Header = () => {
   const { authUser, isLoading } = useAuthContext()
 
   return (
-    <HeaderRoot>
+    <GlobalNavRoot>
       <Flex paddingLeft={3} paddingRight={3} justifyContent="space-between">
         <Nav as="nav" height="56px" alignItems="center">
           <NavLink>
-            <Link href="/" passHref>
-              <Anchor as="a">
-                <AppLogo />
-              </Anchor>
-            </Link>
-          </NavLink>
-          <NavLink>
             <Box display={{ base: 'none', md: 'block' }}>
               <Text>
-                カテゴリ
+                レシピ
               </Text>
             </Box>
           </NavLink>
           <NavLink>
             <Box display={{ base: 'none', md: 'block' }}>
               <Text>
-                サブカテゴリ
+                お気に入り
               </Text>
             </Box>
           </NavLink>
         </Nav>
         <Nav as="nav" height="56px" alignItems="center">
-          <NavLink>
-            <Box display={{ base: 'block', md: 'none' }}>
-              <Link href="/search" passHref>
-                <Anchor as="a">
-                  <SearchIcon />
-                </Anchor>
-              </Link>
-            </Box>
-          </NavLink>
-          <NavLink>
-            <Link href="/cart" passHref>
-              <Anchor as="a">
-                <BadgeIconButton
-                  icon={<ShoppingCartIcon size={24} />}
-                  size="24px"
-                  
-                  badgeBackgroundColor="textColor"
-                />
-              </Anchor>
-            </Link>
-          </NavLink>
           <NavLink>
             {(() => {
               // 認証していたらアイコンを表示
@@ -111,30 +83,23 @@ const Header = () => {
               } else {
                 // サインインしてない場合はアイコンを表示
                 return (
-                  <>
-                    <Link href="/login" passHref>
-                      <Anchor as="a">
-                        ログイン
-                      </Anchor>
-                    </Link>
-                    <Link href="/signin" passHref>
-                      <Anchor as="a">
-                        サインイン
-                      </Anchor>
-                    </Link>
-                  </>
+                  <Link href="/signin" passHref>
+                    <Anchor as="a">
+                      <PersonIcon size={24} />
+                    </Anchor>
+                  </Link>
                 )
               }
             })()}
           </NavLink>
           <NavLink>
             <Link href="/sell" passHref>
-              <Button as="a">出品</Button>
+              <Button as="a">ログアウト</Button>
             </Link>
           </NavLink>
         </Nav>
       </Flex>
-    </HeaderRoot>
+    </GlobalNavRoot>
   )
 }
 

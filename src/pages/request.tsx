@@ -7,7 +7,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Product: NextPage = () => {
   const { data, error } = useSWR(
-    "http://localhost:3010/api/v1/makers",
+    "http://localhost:3010/api/v1/requests",
     fetcher
   );
 
@@ -18,17 +18,16 @@ const Product: NextPage = () => {
 
   return (
     <div >
-      {data.data.map((maker: any, index: number) => (
-        <li className='p-4' key={maker.id}>
-          <p>ID: {maker.id}</p>
-          <p>Picture: {maker.picture}</p>
-          <p>Created at: {maker.created_at}</p>
-          <p>Updated at: {maker.updated_at}</p>
-          <p>Category Product ID: {maker.category_maker_id}</p>
-          <p>Sub Category Product ID: {maker.sub_category_maker_id}</p>
-          <p>Item ID: {maker.maker_id}</p>
-          <p>Maker ID: {maker.maker_id}</p>
-          <Link href={`http://localhost:3000/maker/${maker.id}`}>Show</Link>
+      {data.data.map((request: any, index: number) => (
+        <li className='p-4' key={request.id}>
+          <p>ID: {request.id}</p>
+          <p>Created at: {request.created_at}</p>
+          <p>Updated at: {request.updated_at}</p>
+          <p>request_type: {request.request_type}</p>
+          <p>request_name: {request.request_name}</p>
+          <p>register_flag: {request.register_flag}</p>
+          <p>user_id: {request.user_id}</p>
+          <Link href={`http://localhost:3000/request/${request.id}`}>Show</Link>
         </li>
       ))}
     </div>

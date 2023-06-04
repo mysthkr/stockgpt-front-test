@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 export const withAuthServerSideProps = (url: string): GetServerSideProps => {
   return async (context) => {
     const { req, res } = context;
+    const { id } = context.query;
 
     const response = await fetch(`http://localhost:3010/api/v1/${url}`, {
       headers: {

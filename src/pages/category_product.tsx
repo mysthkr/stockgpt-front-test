@@ -28,10 +28,7 @@ const CategoryProduct: NextPage = () => {
           <p>ID: {category_product.id}</p>
           <p>Created at: {category_product.created_at}</p>
           <p>Updated at: {category_product.updated_at}</p>
-          <p>Category Grocery ID: {category_product.category_category_product_id}</p>
-          <p>Sub Category Grocery ID: {category_product.sub_category_category_product_id}</p>
-          <p>Item ID: {category_product.item_id}</p>
-          <p>Maker ID: {category_product.maker_id}</p>
+          <p>Name: {category_product.name}</p>
           <Link href={`http://localhost:3000/category_product/${category_product.id}`}>Show</Link>
         </li>
       ))}

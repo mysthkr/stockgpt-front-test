@@ -10,7 +10,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export const getServerSideProps: GetServerSideProps =
   withAuthServerSideProps("sub_category_products");
 
-const CategoryProduct: NextPage = () => {
+const SubCategoryProduct: NextPage = () => {
   const { data, error } = useSWR(
     "http://localhost:3010/api/v1/sub_category_products",
     fetcher
@@ -39,4 +39,4 @@ const CategoryProduct: NextPage = () => {
   );
 };
 
-export default CategoryProduct;
+export default SubCategoryProduct;

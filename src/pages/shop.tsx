@@ -21,13 +21,9 @@ const Product: NextPage = () => {
       {data.data.map((shop: any, index: number) => (
         <li className='p-4' key={shop.id}>
           <p>ID: {shop.id}</p>
-          <p>Picture: {shop.picture}</p>
           <p>Created at: {shop.created_at}</p>
           <p>Updated at: {shop.updated_at}</p>
-          <p>Category Product ID: {shop.category_shop_id}</p>
-          <p>Sub Category Product ID: {shop.sub_category_shop_id}</p>
-          <p>Item ID: {shop.shop_id}</p>
-          <p>Maker ID: {shop.shop_id}</p>
+          <p>Name: {shop.name}</p>
           <Link href={`http://localhost:3000/shop/${shop.id}`}>Show</Link>
         </li>
       ))}

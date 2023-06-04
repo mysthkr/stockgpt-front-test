@@ -28,10 +28,11 @@ const Cart: NextPage = () => {
           <p>ID: {cart.id}</p>
           <p>Created at: {cart.created_at}</p>
           <p>Updated at: {cart.updated_at}</p>
-          <p>Category Grocery ID: {cart.category_cart_id}</p>
-          <p>Sub Category Grocery ID: {cart.sub_category_cart_id}</p>
-          <p>Item ID: {cart.item_id}</p>
-          <p>Maker ID: {cart.maker_id}</p>
+          <p>criteria: {cart.criteria}</p>
+          <p>price: {cart.price}</p>
+          <p>group_id: {cart.group_id}</p>
+          <p>item_id: {cart.item_id}</p>
+          <p>Discarded at: {cart.discarded_at}</p>
           <Link href={`http://localhost:3000/cart/${cart.id}`}>Show</Link>
         </li>
       ))}

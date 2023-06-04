@@ -11,7 +11,14 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 
 export const getServerSideProps: GetServerSideProps =
-  withAuthServerSideProps(`grocery/${router.query.id}`);
+  withAuthServerSideProps(`groceries`);
+
+// export async function getServerSideProps({ query })  {
+//   withAuthServerSideProps(`grocery/${query.id}`);
+//   return {
+//     props: {},
+//   };
+// };
 
 const Grocery = (props: any) => {
   return (

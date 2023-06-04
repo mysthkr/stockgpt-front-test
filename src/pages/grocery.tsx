@@ -6,7 +6,11 @@ import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
 import { Skeleton } from '@mui/material';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) => fetch(url, {
+  credentials: 'include',headers: {
+    "Content-Type": "application/json"
+  },
+}).then((res) => res.json());
 
 // export const getServerSideProps: GetServerSideProps =
 //   withAuthServerSideProps("groceries");

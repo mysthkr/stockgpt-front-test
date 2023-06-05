@@ -4,12 +4,15 @@ import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, Promis
 import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
+import { withGetServerSideProps } from "lib/withAuth";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export const getServerSideProps: GetServerSideProps =
   withAuthServerSideProps("category_groceries");
 
+// export const getServerSideProps: GetServerSideProps =
+//   withGetServerSideProps("category_groceries");
 
 
 const CategoryGrocery = (props: any) => {
@@ -23,7 +26,7 @@ const CategoryGrocery = (props: any) => {
           <p>Name: {category_grocery.name}</p>
           <Link href={`http://localhost:3000/category_grocery/${category_grocery.id}`}>Show</Link>
         </li>
-      ))}
+      ))}l
     </div>
   );
 };

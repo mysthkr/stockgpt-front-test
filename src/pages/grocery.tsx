@@ -1,10 +1,11 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
+import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState } from "react";
 import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
 import { Skeleton } from '@mui/material';
+import { ItemDialog } from "components/organisms/ItemDialog";
 
 const fetcher = (url: string) => fetch(url, {
   credentials: 'include',headers: {
@@ -14,6 +15,8 @@ const fetcher = (url: string) => fetch(url, {
 
 // export const getServerSideProps: GetServerSideProps =
 //   withAuthServerSideProps("groceries");
+
+
 
 const Grocery: NextPage = () => {
   const { data, error } = useSWR(
@@ -37,6 +40,9 @@ const Grocery: NextPage = () => {
           <p>Sub Category Grocery ID: {grocery.sub_category_grocery_id}</p>
           <p>Item ID: {grocery.item_id}</p>
           <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
+          <ItemDialog item={grocery} isOpen={false} onClose={function (): void {
+            throw new Error("Function not implemented.");
+          } } />
         </li>
       ))}
     </div>

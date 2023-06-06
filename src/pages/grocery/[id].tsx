@@ -38,13 +38,19 @@ export const getServerSideProps: GetServerSideProps =
 
 
 
-
+interface LayoutGroceryProps {
+  id: number;
+  category_grocery_id: number;
+  sub_category_grocery_id: number;
+  item_id: number;
+  maker_id: number;
+}
 
 
 const Grocery = (props: any) => {
   console.log(props)
   return (
-    <Layout>
+    <Layout {...props}>
       <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
         <Flex
           width={{ base: '100%', md: '1040px' }}
@@ -60,7 +66,6 @@ const Grocery = (props: any) => {
             <p>Category Grocery ID: {props.category_grocery_id}</p>
             <p>Sub Category Grocery ID: {props.sub_category_grocery_id}</p>
             <p>Item ID: {props.item_id}</p>
-            <p>Maker ID: {props.maker_id}</p>
             <Link href={`http://localhost:3000/grocery`}>Show</Link>
           </li>
           </Box>

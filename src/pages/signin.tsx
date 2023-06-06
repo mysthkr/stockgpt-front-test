@@ -30,24 +30,43 @@ const Signin = () => {
       setErrorMessage("");
       return await axiosInstance
         .post("groups", {
-          name: data.get("default_group_name"),
+          name: "default_group_name",
         })
         .then(function (response) {
           // group_idを受け取ってセットしたい
-          axiosInstance
-            .post("auth", {
-              email: data.get("email"),
-              password: data.get("password"),
-              group_id: data.get("group_id")
-            })
-          router.push("/home");
+          const group_id = response.data.id
+          console.log(response.data);
+          console.log(response.data.id);
+          (async () => {
+            setIsError(false);
+            setErrorMessage("");
+            return await axiosInstance
+              .post("auth/sign_in", {
+                email: data.get("email"),
+                password: data.get("password"),
+                group_id: group_id,
+              })
+              .then(function (response) {
+                // group_idを受け取ってセットしたい
+                console.log(response.headers);
+                console.log(response);
+                Cookies.set("uid", response.headers["uid"]);
+                Cookies.set("client", response.headers["client"]);
+                Cookies.set("access-token", response.headers["access-token"]);
+                router.push("/home");
+              })
+              .catch(function (error) {
+                setIsError(true);
+                setErrorMessage(error.response.data.errors[0]);
+              });
+          })();
         })
         .catch(function (error) {
-          // Cookieからトークンを削除しています
           setIsError(true);
           setErrorMessage(error.response.data.errors[0]);
         });
     })();
+    
   };
 
   return (

@@ -37,16 +37,6 @@ export const getServerSideProps: GetServerSideProps =
 // }
 
 
-
-interface LayoutGroceryProps {
-  id: number;
-  category_grocery_id: number;
-  sub_category_grocery_id: number;
-  item_id: number;
-  maker_id: number;
-}
-
-
 const Grocery = (props: any) => {
   console.log(props)
   return (

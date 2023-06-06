@@ -73,7 +73,7 @@ const Header = () => {
                 return (
                   <Link href={`/users/${authUser.id}`} passHref>
                     <Anchor as="a">
-                      
+                      login
                     </Anchor>
                   </Link>
                 )

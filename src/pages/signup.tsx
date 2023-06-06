@@ -11,7 +11,7 @@ import {
 import axios from "axios"
 import Cookies from "js-cookie"
 
-const Signin = () => {
+const Signup = () => {
   const router = useRouter();
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -41,7 +41,7 @@ const Signin = () => {
             setIsError(false);
             setErrorMessage("");
             return await axiosInstance
-              .post("auth/sign_in", {
+              .post("auth", {
                 email: data.get("email"),
                 password: data.get("password"),
                 group_id: group_id,
@@ -114,4 +114,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Signup;

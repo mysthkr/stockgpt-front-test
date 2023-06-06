@@ -1,10 +1,14 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
+import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState } from "react";
 import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
 import { Skeleton } from '@mui/material';
+import { ItemDialog } from "components/organisms/ItemDialog";
+import Box from 'components/layout/Box'
+import Flex from 'components/layout/Flex'
+import Layout from 'components/templates/Layout'
 
 const fetcher = (url: string) => fetch(url, {
   credentials: 'include',headers: {
@@ -14,6 +18,8 @@ const fetcher = (url: string) => fetch(url, {
 
 // export const getServerSideProps: GetServerSideProps =
 //   withAuthServerSideProps("groceries");
+
+
 
 const Grocery: NextPage = () => {
   const { data, error } = useSWR(
@@ -27,19 +33,35 @@ const Grocery: NextPage = () => {
   // console.log(data);
 
   return (
-    <div >
-      {data.data.map((grocery: any) => (
-        <li className='p-4' key={grocery.id}>
-          <p>ID: {grocery.id}</p>
-          <p>Created at: {grocery.created_at}</p>
-          <p>Updated at: {grocery.updated_at}</p>
-          <p>Category Grocery ID: {grocery.category_grocery_id}</p>
-          <p>Sub Category Grocery ID: {grocery.sub_category_grocery_id}</p>
-          <p>Item ID: {grocery.item_id}</p>
-          <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
-        </li>
-      ))}
-    </div>
+    <Layout {...data}>
+      <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
+        <Flex
+          width={{ base: '100%', md: '1040px' }}
+          justifyContent="space-between"
+          alignItems="center"
+          flexDirection={{ base: 'column', md: 'row' }}
+        >
+          <Box width="100%">
+            <div >
+              {data.data.map((grocery: any) => (
+                <li className='p-4' key={grocery.id}>
+                  <p>ID: {grocery.id}</p>
+                  <p>Created at: {grocery.created_at}</p>
+                  <p>Updated at: {grocery.updated_at}</p>
+                  <p>Category Grocery ID: {grocery.category_grocery_id}</p>
+                  <p>Sub Category Grocery ID: {grocery.sub_category_grocery_id}</p>
+                  <p>Item ID: {grocery.item_id}</p>
+                  <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
+                  <ItemDialog item={grocery} isOpen={false} onClose={function (): void {
+                    throw new Error("Function not implemented.");
+                  } } />
+                </li>
+              ))}
+            </div>
+          </Box>
+        </Flex>
+      </Flex>
+    </Layout>
   );
 };
 

@@ -14,6 +14,7 @@ import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import BadgeIconButton from 'components/molecules/BadgeIconButton'
 import { useAuthContext } from 'contexts/AuthContext'
+import { withAuthServerSideProps } from "lib/auth";
 
 // ヘッダーのルート
 const HeaderRoot = styled.header`
@@ -121,6 +122,9 @@ const Header = () => {
                       <Anchor as="a">
                         サインイン
                       </Anchor>
+                    </Link>
+                    <Link href="/profile/1" passHref>
+                      プロフィール
                     </Link>
                   </>
                 )

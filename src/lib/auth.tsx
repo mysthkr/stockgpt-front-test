@@ -7,12 +7,11 @@ export const withAuthServerSideProps = (url: string): GetServerSideProps => {
     const { req, res } = context;
     const { id } = context.query;
 
-
-    console.log(id);
-    console.log("===============");
-    if (id !== undefined) {
-      url = `${url}/${id}`;
-    }
+    // if (id !== undefined) {
+    //   url = `${url}/${id}`;
+    // }
+    console.log("url");
+    console.log(url);
     const response = await fetch(`http://localhost:3010/api/v1/${url}`, {
       headers: {
         "Content-Type": "application/json",
@@ -21,7 +20,6 @@ export const withAuthServerSideProps = (url: string): GetServerSideProps => {
         "access-token": req.cookies["access-token"]!,
       },
     });
-    console.log(response.headers);
     if (!response.ok && response.status === 401) {
       return {
         redirect: {

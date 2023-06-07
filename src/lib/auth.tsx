@@ -7,9 +7,9 @@ export const withAuthServerSideProps = (url: string): GetServerSideProps => {
     const { req, res } = context;
     const { id } = context.query;
 
-    // if (id !== undefined) {
-    //   url = `${url}/${id}`;
-    // }
+    if (id !== undefined) {
+      url = `${url}/${id}`;
+    }
     console.log("url");
     console.log(url);
     const response = await fetch(`http://localhost:3010/api/v1/${url}`, {

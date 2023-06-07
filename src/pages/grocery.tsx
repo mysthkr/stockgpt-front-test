@@ -10,9 +10,35 @@ import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
 
-const fetcher = (url: string) => fetch(url, {
-  credentials: 'include',headers: {
-    "Content-Type": "application/json"
+const checkCookie = () => {
+  if (typeof document !== 'undefined') {
+    //クッキーに値をセット
+    console.log(document.cookie);
+    const arr: {[key: string]: string} = {};
+    if(document.cookie != ''){
+      var tmp = document.cookie.split('; ');
+      for(var i=0;i<tmp.length;i++){
+        var data = tmp[i].split('=');
+        arr[data[0]] = decodeURIComponent(data[1]);
+      }
+    }
+    const uid: string = arr['uid'];
+    const client: string = arr['client'];
+    const accessToken: string = arr['access-token'];
+    console.log("============checkCookie============");
+    console.log(client);
+    console.log(uid);
+    console.log(accessToken);
+  }
+}
+
+const fetcher = (url: string, uid: string, client: string, accessToken: string) => fetch(url, {
+  credentials: 'include',
+  headers: {
+    "Content-Type": "application/json",
+    "uid": uid,
+    "client": client,
+    "access-token": accessToken,
   },
 }).then((res) => res.json());
 
@@ -22,6 +48,7 @@ const fetcher = (url: string) => fetch(url, {
 
 
 const Grocery: NextPage = () => {
+  checkCookie();
   const { data, error } = useSWR(
     "http://localhost:3010/api/v1/groceries",
     fetcher

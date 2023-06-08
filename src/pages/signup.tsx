@@ -47,14 +47,37 @@ const Signup = () => {
                 group_id: group_id,
               })
               .then(function (response) {
-                // group_idを受け取ってセットしたい
+                // user_idを受け取ってセットしたい
+                const user_id = response.data.data.id
+                console.log("===================================");
                 console.log(response.headers);
                 console.log(response);
-                Cookies.set("uid", response.headers["uid"]);
-                Cookies.set("client", response.headers["client"]);
-                Cookies.set("access-token", response.headers["access-token"]);
-                router.push("/home");
-              })
+                (async () => {
+                  setIsError(false);
+                  setErrorMessage("");
+                  return await axiosInstance
+                    .post("profiles", {
+                      name: "名前",
+                      nickname: "ニックネーム",
+                      user_id: user_id,
+                    })
+                    .then(function (response) {
+                      // user_idを受け取ってセットしたい
+                      const user_id = response.data.id
+                      console.log(response.headers);
+                      console.log(response);
+
+                      Cookies.set("uid", response.headers["uid"]);
+                      Cookies.set("client", response.headers["client"]);
+                      Cookies.set("access-token", response.headers["access-token"]);
+                      router.push("/home");
+                    })
+                    .catch(function (error) {
+                      setIsError(true);
+                      setErrorMessage(error.response.data.errors[0]);
+                    });
+                  })();
+                })
               .catch(function (error) {
                 setIsError(true);
                 setErrorMessage(error.response.data.errors[0]);

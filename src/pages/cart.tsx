@@ -5,10 +5,21 @@ import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string, uid: string, client: string, accessToken: string) => fetch(url, {
+  credentials: 'include',
+  headers: {
+    "Content-Type": "application/json",
+    // "uid": uid,
+    // "client": client,
+    // "access-token": accessToken,
+    "uid": "testform@gmail.com"!,
+    "client": "jYtoDrGC9IRHU03Zt5ZTbA"!,
+    "access-token": "yy4Bs5wz2BLaX4i5E-HnTQ"!,
+  },
+}).then((res) => res.json());
 
-export const getServerSideProps: GetServerSideProps =
-  withAuthServerSideProps("carts");
+// export const getServerSideProps: GetServerSideProps =
+//   withAuthServerSideProps("carts");
 
 const Cart: NextPage = () => {
   const { data, error } = useSWR(

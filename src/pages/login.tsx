@@ -10,6 +10,9 @@ import {
 } from "@mui/material/"
 import axios from "axios"
 import Cookies from "js-cookie"
+import { useUserContext } from '../contexts/UserStateContext';
+
+// console.log(useUserContext());
 
 const Login = () => {
   const router = useRouter();

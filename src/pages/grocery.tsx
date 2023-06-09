@@ -21,66 +21,35 @@ const getCookie = () => {
     //クッキーに値をセット
     console.log(document.cookie);
     const arr: {[key: string]: string} = {};
-    if (document.cookie) return undefined;
+    // if (document.cookie) return undefined;
     if(document.cookie != ''){
       var tmp = document.cookie.split('; ');
       for(var i=0;i<tmp.length;i++){
         var data = tmp[i].split('=');
         arr[data[0]] = decodeURIComponent(data[1]);
       }
-    
     const uid: string = arr['uid'];
     const client: string = arr['client'];
     const accessToken: string = arr['access-token'];
-    console.log("============checkCookie============");
-    console.log(client);
-    console.log(uid);
-    console.log(accessToken);
     return {uid, client, accessToken};
     }
   }
 }
 
-// const fetcher = (url: string) => {
-//   const cookieData = getCookie();
-//   console.log(cookieData);
-//   console.log(url);
-//   fetch(url).then((res) => res.json())
-// };
-
-const fetcher = (url: string, uid: string, client: string, accessToken: string) => fetch(url, {
-  credentials: 'include',
-  headers: {
-    "Content-Type": "application/json",
-    // "uid": uid,
-    // "client": client,
-    // "access-token": accessToken,
-  },
-}).then((res) => res.json());
-
-// const fetcher = (url: string) => {
-//   const cookieData = getCookie();
-//   const uid = cookieData?.uid;
-//   const client = cookieData?.client;
-//   const accessToken = cookieData?.accessToken;
-//   console.log("===========fetcher============");
-//   console.log(client);
-//   console.log(uid);
-//   console.log(accessToken);
-//   fetch(url, {
-//   credentials: 'include',
-//   headers: {
-//     "Content-Type": "application/json",
-//     "uid": uid,
-//     "client": client,
-//     "access-token": accessToken,
-//   },
-// })}.then((res) => res.json());
-
-// export const getServerSideProps: GetServerSideProps =
-//   withAuthServerSideProps("groceries");
-
-
+const fetcher = (url: string) => {
+  const cookieData = getCookie();
+  // console.log(cookieData);
+  // console.log(cookieData?.uid);
+  return fetch(url, {
+    credentials: 'include',
+    headers: {
+      "Content-Type": "application/json",
+      "uid": cookieData?.uid,
+      "client": cookieData?.client,
+      "access-token": cookieData?.accessToken,
+    },
+  }).then((res) => res.json())
+};
 
 const Grocery: NextPage = () => {
   
@@ -93,8 +62,8 @@ const Grocery: NextPage = () => {
     "http://localhost:3010/api/v1/groceries",
     fetcher
   );
+  const [isLoading, setIsLoading] = useState(false);
 
-  console.log(data);
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <Skeleton>Loading...</Skeleton>;
 
@@ -144,6 +113,37 @@ const Grocery: NextPage = () => {
         });
     })();
   }
+
+  const addClick = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`http://localhost:3010/api/v1/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          key1: 'value1',
+          key2: 'value2',
+          // etc...
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // この部分でレスポンスを処理します...
+      // const data = await response.json();
+      // console.log(data);
+
+    } catch (error) {
+      console.error('An error occurred:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   return (
     <Layout {...data}>
@@ -193,6 +193,7 @@ const Grocery: NextPage = () => {
                   <p>Sub Category Grocery ID: {grocery.sub_category_grocery_id}</p>
                   <p>Item ID: {grocery.item_id}</p>
                   <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
+
                 </li>
               ))}
             </div>

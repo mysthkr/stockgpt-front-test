@@ -32,7 +32,47 @@ const Product: NextPage = () => {
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <div>Loading...</div>;
 
-  console.log(data);
+  interface AddCartButtonProps {
+    className: string;
+  }
+  const AddCartButton: React.FC<AddCartButtonProps> = ({ className }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const addClick = async () => {
+      setIsLoading(true);
+  
+      try {
+        const response = await fetch('http://localhost:3010/api/v1/carts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            criteria: 100,
+            price: 100,
+            item_id: 1,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // この部分でレスポンスを処理します...
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    return (
+      <button onClick={addClick} disabled={isLoading}>
+        {isLoading ? 'Loading...' : 'Click Me'}
+      </button>
+    );
+  }
+  
 
   return (
     <Layout {...data}>
@@ -68,6 +108,7 @@ const Product: NextPage = () => {
                   <p>Item ID: {product.item_id}</p>
                   <p>Maker ID: {product.maker_id}</p>
                   <Link href={`http://localhost:3000/product/${product.id}`}>Show</Link>
+                  <AddCartButton className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" />
                 </li>
               ))}
             </div>

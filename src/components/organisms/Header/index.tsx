@@ -118,9 +118,9 @@ const Header = () => {
                         ログイン
                       </Anchor>
                     </Link>
-                    <Link href="/signin" passHref>
+                    <Link href="/signup" passHref>
                       <Anchor as="a">
-                        サインイン
+                        サインアップ
                       </Anchor>
                     </Link>
                     <Link href="/profile/1" passHref>
@@ -132,8 +132,13 @@ const Header = () => {
             })()}
           </NavLink>
           <NavLink>
-            <Link href="/sell" passHref>
-              <Button as="a">出品</Button>
+            <Link href="/stock_item" passHref>
+              <Button as="a">ストック</Button>
+            </Link>
+          </NavLink>
+          <NavLink>
+            <Link href="/to_buy_list" passHref>
+              <Button as="a">買い物リスト</Button>
             </Link>
           </NavLink>
         </Nav>

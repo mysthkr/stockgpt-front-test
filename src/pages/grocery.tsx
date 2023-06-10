@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState, SetStateAction } from "react";
-import useSWR, { useSWRConfig,Key, SWRResponse, mutate, cache } from "swr";
+import { ReactNode, ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState, SetStateAction } from "react";
+import useSWR, { useSWRConfig,Key, SWRResponse, mutate, Cache } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Skeleton, Tab, Tabs, Typography } from '@mui/material';
+import { Alert, Skeleton, Tab, Tabs, TextField, Typography,Paper } from '@mui/material';
 import { TabPanel } from "@mui/lab";
 import { ItemDialog } from "components/organisms/ItemDialog";
 import Box from 'components/layout/Box'
@@ -17,6 +17,8 @@ import { useRouter } from "next/router";
 import Cookies from "js-cookie"
 import { getCookie } from "lib/getCookie";
 import React from "react";
+import { AppProps } from 'next/app';
+import toast, { Toaster } from 'react-hot-toast';
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
@@ -70,20 +72,24 @@ const Grocery: NextPage = () => {
 
   interface AddCartButtonProps {
     className: string;
-    item: {criteria: number, price: number, item_id: number}
+    // item: {criteria: number, price: number, item_id: number}
+    item_id: number;
   }
 
-  const AddCartButton: React.FC<AddCartButtonProps> = ({ className }) => {
+  const AddCartButton: React.FC<AddCartButtonProps> = ({ className , item_id}) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [criteriaInput, setCriteria] = useState('');
+    const [priceInput, setPrice] = useState('');
+
     const addClick = async () => {
       setIsLoading(true);
       const cookieData = getCookie();
-  
       try {
-        const item = {criteria: 100,
-          price: 100,
-          item_id: 1,}
-
+        const item = {
+          criteria: Number(criteriaInput),
+          price: Number(priceInput),
+          item_id: Number(item_id),
+        }
         const response = await fetch('http://localhost:3010/api/v1/carts', {
           method: 'POST',
           credentials: 'include',
@@ -93,11 +99,7 @@ const Grocery: NextPage = () => {
             "client": cookieData?.client || "",
             "access-token": cookieData?.accessToken || "",
           },
-          body: JSON.stringify({
-            criteria: item.criteria,
-            price: item.price,
-            item_id: item.item_id,
-          }),
+          body: JSON.stringify(item),
         });
   
         if (!response.ok) {
@@ -105,17 +107,52 @@ const Grocery: NextPage = () => {
         }
         // この部分でレスポンスを処理します...
         const data = await response.json();
+        toast.success("カートに追加しました！");
+        setCriteria('');
+        setPrice('');
       } catch (error) {
         console.error('An error occurred:', error);
+        toast.error("カートに追加できません！");
       } finally {
         setIsLoading(false);
       }
     };
   
     return (
-      <Button color="black" onClick={addClick} disabled={isLoading}>
-        {isLoading ? 'Loading...' : 'カートに追加'}
-      </Button>
+      <Paper component="form">
+        <TextField
+          id="criteria"
+          label="消費目安(日後)"
+          name="criteria"
+          value={criteriaInput}
+          onChange={e => setCriteria(e.target.value)}
+          autoComplete="criteria"
+          autoFocus
+        />
+        <TextField
+          name="price"
+          label="値段"
+          type="price"
+          id="price"
+          value={priceInput}
+          onChange={e => setPrice(e.target.value)}
+          autoComplete="price"
+        />
+        {isError ? (
+          <Alert
+            onClose={() => {
+              setIsError(false);
+              setErrorMessage("");
+            }}
+            severity="error"
+          >
+            {errorMessage}
+          </Alert>
+        ) : null}
+        <Button color="black" onClick={addClick} disabled={isLoading}>
+          {isLoading ? 'Loading...' : 'カートに追加'}
+        </Button>
+      </Paper>
     );
   }
 
@@ -229,6 +266,7 @@ const Grocery: NextPage = () => {
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <Box width="100%">
+          <Toaster />
             
 
             <Box>
@@ -277,7 +315,12 @@ const Grocery: NextPage = () => {
                   <p>Item ID: {grocery.item_id}</p>
                   <p>Item Name: {grocery.item_name}</p>
                   <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
-                  <AddCartButton item={{criteria: 2, price: 3, item_id: grocery.item_id}} className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  <AddCartButton item_id={grocery.item_id}
+                  className="text-white bg-indigo-500 border-0 py-2 px-8 
+                  focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  
+
+
                 </li>
               ))}
             </div>

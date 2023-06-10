@@ -4,18 +4,37 @@ import React, { useReducer, useState } from "react";
 import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
 import useSWR from "swr";
 import router from 'next/router';
-import { withAuthServerSideProps } from "lib/auth";
+import { withAuthServerSideProps, withAuthFetch } from "lib/auth";
 import { GetServerSideProps } from "next";
 import Text from 'components/atoms/Text'
 import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+// const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+// export const getServerSideProps: GetServerSideProps =
+//   withAuthServerSideProps(`groceries`);
 
-export const getServerSideProps: GetServerSideProps =
-  withAuthServerSideProps(`groceries`);
+  export async function getServerSideProps(context: { query?: any; req?: any; res?: any; }) {
+    const { req, res } = context;
+    const { id } = context.query;
+    console.log(req);
+  
+    const response = await withAuthFetch(`groceries/${id}`, req.cookies);
+    console.log(response.headers);
+    if (!response.ok && response.status === 401) {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+    // TODO: 他にも500エラーを考慮した分岐も必要
+    const props = await response.json();
+    return { props };
+  };
 
 // export async function getServerSideProps({ query })  {
 //   withAuthServerSideProps(`grocery/${query.id}`);

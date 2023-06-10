@@ -4,7 +4,7 @@ import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, Promis
 import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Skeleton, Tab, Tabs } from '@mui/material';
+import { Skeleton, Tab, Tabs, Typography } from '@mui/material';
 import { TabPanel } from "@mui/lab";
 import { ItemDialog } from "components/organisms/ItemDialog";
 import Box from 'components/layout/Box'
@@ -25,9 +25,9 @@ const fetcher = (url: string) => {
     credentials: 'include',
     headers: {
       "Content-Type": "application/json",
-      "uid": cookieData?.uid,
-      "client": cookieData?.client,
-      "access-token": cookieData?.accessToken,
+      "uid": cookieData?.uid || "",
+      "client": cookieData?.client || "",
+      "access-token": cookieData?.accessToken || "",
     },
   }).then((res) => res.json())
 };
@@ -44,13 +44,20 @@ const Product: NextPage = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
 
+  const [value, setValue] = useState(1);
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+    router.push('/grocery');
+  };
+
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <Skeleton>Loading...</Skeleton>;
 
   interface AddCartButtonProps {
     className: string;
+    item: {criteria: number, price: number, item_id: number}
   }
-  
+
   const AddCartButton: React.FC<AddCartButtonProps> = ({ className }) => {
     const [isLoading, setIsLoading] = useState(false);
     const addClick = async () => {
@@ -63,9 +70,9 @@ const Product: NextPage = () => {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            "uid": cookieData?.uid,
-            "client": cookieData?.client,
-            "access-token": cookieData?.accessToken,
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
           },
           body: JSON.stringify({
             criteria: 100,
@@ -94,6 +101,26 @@ const Product: NextPage = () => {
       </Button>
     );
   }
+
+  function TabPanel(props: { [x: string]: any; children: any; value: any; index: any; }) {
+    const { children, value, index, ...other } = props;
+  
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
   
 
   return (
@@ -106,14 +133,22 @@ const Product: NextPage = () => {
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <Box width="100%">
-            <Box width="100%">
-              <Link href="/grocery">
-                <Text>食料品</Text>
-              </Link>
-              <Link href="/product">
-                <Text>日用品</Text>
-              </Link>
+            
+
+            <Box>
+              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                <Tab label="食料品"  value={0} />
+                <Tab label="日用品"  value={1} />
+              </Tabs>
             </Box>
+            <TabPanel value={value} index={0}>
+              
+            </TabPanel>
+            
+            <TabPanel value={value} index={1}>
+            
+            </TabPanel>
+
             <Box width="100%">
               <Text>検索</Text>
             </Box>
@@ -134,7 +169,11 @@ const Product: NextPage = () => {
                   <p>Maker ID: {product.maker_id}</p>
                   <p>Maker Name: {product.maker_name}</p>
                   <Link href={`http://localhost:3000/product/${product.id}`}>Show</Link>
-                  <AddCartButton className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  <AddCartButton className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" item={{
+                    criteria: 0,
+                    price: 0,
+                    item_id: 0
+                  }} />
                   <GrFavorite />
                   <MdFavorite />
                 </li>

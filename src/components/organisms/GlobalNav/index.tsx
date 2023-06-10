@@ -52,16 +52,24 @@ const Header = () => {
         <Nav as="nav" height="56px" alignItems="center">
           <NavLink>
             <Box display={{ base: 'none', md: 'block' }}>
-              <Text>
-                レシピ
-              </Text>
+              <Link href="/recipe" passHref>
+                <Anchor as="a">
+                  <Text>
+                    レシピ
+                  </Text>
+                </Anchor>
+              </Link>
             </Box>
           </NavLink>
           <NavLink>
             <Box display={{ base: 'none', md: 'block' }}>
-              <Text>
-                お気に入り
-              </Text>
+              <Link href="/favorite" passHref>
+                <Anchor as="a">
+                  <Text>
+                    お気に入り
+                  </Text>
+                </Anchor>
+              </Link>
             </Box>
           </NavLink>
         </Nav>

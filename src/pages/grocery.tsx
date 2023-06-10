@@ -11,35 +11,14 @@ import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
 import Text from 'components/atoms/Text'
+import Button from 'components/atoms/Button'
 import axios from "axios";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie"
-
-
-const getCookie = () => {
-  if (typeof document !== 'undefined') {
-    //クッキーに値をセット
-    console.log(document.cookie);
-    const arr: {[key: string]: string} = {};
-    // if (document.cookie) return undefined;
-    if(document.cookie != ''){
-      var tmp = document.cookie.split('; ');
-      for(var i=0;i<tmp.length;i++){
-        var data = tmp[i].split('=');
-        arr[data[0]] = decodeURIComponent(data[1]);
-      }
-    const uid: string = arr['uid'];
-    const client: string = arr['client'];
-    const accessToken: string = arr['access-token'];
-    return {uid, client, accessToken};
-    }
-  }
-}
+import { getCookie } from "lib/getCookie";
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
-  // console.log(cookieData);
-  // console.log(cookieData?.uid);
   return fetch(url, {
     credentials: 'include',
     headers: {
@@ -76,7 +55,59 @@ const Grocery: NextPage = () => {
   //   console.log(text);
   // };
 
+  interface AddCartButtonProps {
+    className: string;
+    item: {criteria: number, price: number, item_id: number}
+  }
 
+  const AddCartButton: React.FC<AddCartButtonProps> = ({ className }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const addClick = async () => {
+      setIsLoading(true);
+      const cookieData = getCookie();
+  
+      try {
+        const item = {criteria: 100,
+          price: 100,
+          item_id: 1,}
+
+        const response = await fetch('http://localhost:3010/api/v1/carts', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
+          },
+          body: JSON.stringify({
+            criteria: item.criteria,
+            price: item.price,
+            item_id: item.item_id,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // この部分でレスポンスを処理します...
+        const data = await response.json();
+      } catch (error) {
+        console.error('An error occurred:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    return (
+      <Button color="black" onClick={addClick} disabled={isLoading}>
+        {isLoading ? 'Loading...' : 'カートに追加'}
+      </Button>
+    );
+  }
+
+
+  //検索機能
   const changeText = (e: any) => {
     setText(e.target.value);
     clickSubmit(e.target.value);
@@ -100,8 +131,6 @@ const Grocery: NextPage = () => {
         })
         .then(function (response) {
           // Cookieにトークンをセットしています
-          console.log(response.headers);
-          console.log(response);
           Cookies.set("uid", response.headers["uid"]);
           Cookies.set("client", response.headers["client"]);
           Cookies.set("access-token", response.headers["access-token"]);
@@ -114,36 +143,36 @@ const Grocery: NextPage = () => {
     })();
   }
 
-  const addClick = async () => {
-    setIsLoading(true);
+  // const addClick = async () => {
+  //   setIsLoading(true);
 
-    try {
-      const response = await fetch(`http://localhost:3010/api/v1/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          key1: 'value1',
-          key2: 'value2',
-          // etc...
-        }),
-      });
+  //   try {
+  //     const response = await fetch(`http://localhost:3010/api/v1/`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         key1: 'value1',
+  //         key2: 'value2',
+  //         // etc...
+  //       }),
+  //     });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
 
-      // この部分でレスポンスを処理します...
-      // const data = await response.json();
-      // console.log(data);
+  //     // この部分でレスポンスを処理します...
+  //     // const data = await response.json();
+  //     // console.log(data);
 
-    } catch (error) {
-      console.error('An error occurred:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   } catch (error) {
+  //     console.error('An error occurred:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   
   return (
     <Layout {...data}>
@@ -181,7 +210,6 @@ const Grocery: NextPage = () => {
                 onClick={clickSubmit}
               />
             </form>
-
             </Box>
             <div >
               {data.data.map((grocery: any) => (
@@ -190,10 +218,13 @@ const Grocery: NextPage = () => {
                   <p>Created at: {grocery.created_at}</p>
                   <p>Updated at: {grocery.updated_at}</p>
                   <p>Category Grocery ID: {grocery.category_grocery_id}</p>
+                  <p>Category Grocery Name: {grocery.category_grocery_name}</p>
                   <p>Sub Category Grocery ID: {grocery.sub_category_grocery_id}</p>
+                  <p>Sub Category Grocery Name: {grocery.sub_category_grocery_name}</p>
                   <p>Item ID: {grocery.item_id}</p>
+                  <p>Item Name: {grocery.item_name}</p>
                   <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
-
+                  <AddCartButton item={criteria: 2, price: 3, item_id: 4} className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" />
                 </li>
               ))}
             </div>

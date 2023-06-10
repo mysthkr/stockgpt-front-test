@@ -11,45 +11,67 @@ import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
 import Text from 'components/atoms/Text'
+import Button from 'components/atoms/Button'
+import axios from "axios";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie"
+import { getCookie } from "lib/getCookie";
+import { GrFavorite } from "react-icons/gr";
+import { MdFavorite } from "react-icons/md";
 
-const fetcher = (url: string, uid: string, client: string, accessToken: string) => fetch(url, {
-  credentials: 'include',
-  headers: {
-    "Content-Type": "application/json",
-    "uid": uid,
-    "client": client,
-    "access-token": accessToken,
-  },
-}).then((res) => res.json());
+const fetcher = (url: string) => {
+  const cookieData = getCookie();
+  return fetch(url, {
+    credentials: 'include',
+    headers: {
+      "Content-Type": "application/json",
+      "uid": cookieData?.uid,
+      "client": cookieData?.client,
+      "access-token": cookieData?.accessToken,
+    },
+  }).then((res) => res.json())
+};
 
 const Product: NextPage = () => {
+  const router = useRouter();
+  const [isError, setIsError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
+  const [text, setText] = useState('');
   const { data, error } = useSWR(
     "http://localhost:3010/api/v1/products",
     fetcher
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   if (error) return <div>An error has occurred.</div>;
-  if (!data) return <div>Loading...</div>;
+  if (!data) return <Skeleton>Loading...</Skeleton>;
 
   interface AddCartButtonProps {
     className: string;
   }
+  
   const AddCartButton: React.FC<AddCartButtonProps> = ({ className }) => {
     const [isLoading, setIsLoading] = useState(false);
     const addClick = async () => {
       setIsLoading(true);
+      const cookieData = getCookie();
   
       try {
         const response = await fetch('http://localhost:3010/api/v1/carts', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            "uid": cookieData?.uid,
+            "client": cookieData?.client,
+            "access-token": cookieData?.accessToken,
           },
           body: JSON.stringify({
             criteria: 100,
             price: 100,
             item_id: 1,
+            // product_id: product.id,
           }),
         });
   
@@ -67,9 +89,9 @@ const Product: NextPage = () => {
     };
   
     return (
-      <button onClick={addClick} disabled={isLoading}>
-        {isLoading ? 'Loading...' : 'Click Me'}
-      </button>
+      <Button color="black" onClick={addClick} disabled={isLoading}>
+        {isLoading ? 'Loading...' : 'カートに追加'}
+      </Button>
     );
   }
   
@@ -104,11 +126,17 @@ const Product: NextPage = () => {
                   <p>Created at: {product.created_at}</p>
                   <p>Updated at: {product.updated_at}</p>
                   <p>Category Product ID: {product.category_product_id}</p>
+                  <p>Category Product Name: {product.category_product_name}</p>
                   <p>Sub Category Product ID: {product.sub_category_product_id}</p>
+                  <p>Sub Category Product Name: {product.sub_category_product_name}</p>
                   <p>Item ID: {product.item_id}</p>
+                  <p>Item Name: {product.item_name}</p>
                   <p>Maker ID: {product.maker_id}</p>
+                  <p>Maker Name: {product.maker_name}</p>
                   <Link href={`http://localhost:3000/product/${product.id}`}>Show</Link>
                   <AddCartButton className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  <GrFavorite />
+                  <MdFavorite />
                 </li>
               ))}
             </div>

@@ -116,7 +116,7 @@ const Product: NextPage = () => {
           value={criteriaInput}
           onChange={e => setCriteria(e.target.value)}
           autoComplete="criteria"
-          autoFocus
+          // autoFocus
         />
         <TextField
           name="price"

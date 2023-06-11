@@ -90,6 +90,8 @@ const StockItem: NextPage = () => {
                   <p>group_id: {stock_item.group_id}</p>
                   <p>item_id: {stock_item.item_id}</p>
                   <p>Discarded at: {stock_item.discarded_at}</p>
+                  <p>Alarm_date at: {stock_item.alarm_date}</p>
+                  <p>quantity: {stock_item.quantity}</p>
                   <Link href={`http://localhost:3000/stock_item/${stock_item.id}`}>Show</Link>
                   <Button variant="contained" color="error" onClick={() => deleteClick(stock_item.id)}>delete</Button>
                   

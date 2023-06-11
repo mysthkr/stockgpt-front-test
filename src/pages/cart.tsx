@@ -29,9 +29,6 @@ const fetcher = (url: string) => {
   }).then((res) => res.json())
 };
 
-// export const getServerSideProps: GetServerSideProps =
-//   withAuthServerSideProps("carts");
-
 const Cart: NextPage = () => {
   const { data, error } = useSWR(
     "http://localhost:3010/api/v1/carts",
@@ -86,6 +83,7 @@ const Cart: NextPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [criteriaInput, setCriteria] = useState('');
     const [priceInput, setPrice] = useState('');
+    const [quantityInput, setQuantity] = useState('');
     const date = new Date();
     const newDate = addDays(date, Number(criteriaInput));
     const [alarmDate, setAlarmDate] = useState(newDate);
@@ -100,6 +98,7 @@ const Cart: NextPage = () => {
           price: Number(priceInput),
           alarm_date: alarmDate.toISOString().split('T')[0], // 日付を 'YYYY-MM-DD' 形式に変換
           item_id: Number(item_id),
+          quantity: Number(quantityInput),
         }
         const response = await fetch(`http://localhost:3010/api/v1/stock_items`, {
           method: 'POST',
@@ -173,6 +172,25 @@ const Cart: NextPage = () => {
             }
           }}
           autoComplete="price"
+        />
+        <TextField
+          name="quantity"
+          label="数量"
+          type="quantity"
+          id="quantity"
+          value={quantityInput}
+          onChange={(e) => {
+            const input = e.target.value;
+            if (/^[0-9]*$/.test(input)) { 
+              setQuantity(e.target.value)
+            }
+            else {
+              setErrorMessage("数字は半角で入力してください。");
+              // toast.error("数字は半角で入力してください。");
+              setIsError(true);
+            }
+          }}
+          autoComplete="quantity"
         />
         {isError ? (
           <Alert

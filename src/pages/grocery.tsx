@@ -169,9 +169,6 @@ const Grocery: NextPage = () => {
     const cookieData = getCookie();
     const axiosInstance = axios.create({
       baseURL: `http://localhost:3010/api/v1/`,
-      headers: {
-        "content-type": "application/json",
-      },
     });
     (async () => {
       setIsError(false);

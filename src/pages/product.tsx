@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState } from "react";
+import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState, useEffect } from "react";
 import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Skeleton, Tab, Tabs, Typography } from '@mui/material';
+import { Alert, IconButton, Paper, Skeleton, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { TabPanel } from "@mui/lab";
 import { ItemDialog } from "components/organisms/ItemDialog";
 import Box from 'components/layout/Box'
@@ -18,6 +18,7 @@ import Cookies from "js-cookie"
 import { getCookie } from "lib/getCookie";
 import { GrFavorite } from "react-icons/gr";
 import { MdFavorite } from "react-icons/md";
+import toast from "react-hot-toast";
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
@@ -36,6 +37,7 @@ const Product: NextPage = () => {
   const router = useRouter();
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [favorite, setFavorite] = useState(false);
 
   const [text, setText] = useState('');
   const { data, error } = useSWR(
@@ -53,18 +55,67 @@ const Product: NextPage = () => {
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <Skeleton>Loading...</Skeleton>;
 
+  useEffect(() => {
+    getInitialFavorites();
+  }, []);
+
+  const getInitialFavorites = async ()=> {
+    const cookieData = getCookie();
+    const axiosInstance = axios.create({
+      baseURL: `http://localhost:3010/api/v1/`,
+    });
+    (async () => {
+      setIsError(false);
+      setErrorMessage("");
+      return await axiosInstance
+        .get("favorites", {
+          // credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
+          },
+        })
+        .then(function (response) {
+          // Cookieにトークンをセットしています
+          Cookies.set("uid", response.headers["uid"]);
+          Cookies.set("client", response.headers["client"]);
+          Cookies.set("access-token", response.headers["access-token"]);
+          console.log("response");
+          console.log(response);
+          const data = response.data.json()
+          console.log(data);
+          return data;
+        })
+        .catch(function (error) {
+          // Cookieからトークンを削除しています
+          setIsError(true);
+          setErrorMessage(error.response.data.errors[0]);
+        });
+    })();
+  };
+
   interface AddCartButtonProps {
     className: string;
-    item: {criteria: number, price: number, item_id: number}
+    // item: {criteria: number, price: number, item_id: number}
+    item_id: number;
   }
 
-  const AddCartButton: React.FC<AddCartButtonProps> = ({ className }) => {
+  const AddCartButton: React.FC<AddCartButtonProps> = ({ className, item_id }) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [criteriaInput, setCriteria] = useState('');
+    const [priceInput, setPrice] = useState('');
+
     const addClick = async () => {
       setIsLoading(true);
       const cookieData = getCookie();
-  
       try {
+        const item = {
+          criteria: Number(criteriaInput),
+          price: Number(priceInput),
+          item_id: Number(item_id),
+        }
         const response = await fetch('http://localhost:3010/api/v1/carts', {
           method: 'POST',
           credentials: 'include',
@@ -74,12 +125,7 @@ const Product: NextPage = () => {
             "client": cookieData?.client || "",
             "access-token": cookieData?.accessToken || "",
           },
-          body: JSON.stringify({
-            criteria: 100,
-            price: 100,
-            item_id: 1,
-            // product_id: product.id,
-          }),
+          body: JSON.stringify(item),
         });
   
         if (!response.ok) {
@@ -87,18 +133,52 @@ const Product: NextPage = () => {
         }
         // この部分でレスポンスを処理します...
         const data = await response.json();
-        console.log(data);
+        toast.success("カートに追加しました！");
+        setCriteria('');
+        setPrice('');
       } catch (error) {
         console.error('An error occurred:', error);
+        toast.error("カートに追加できません！");
       } finally {
         setIsLoading(false);
       }
     };
   
     return (
-      <Button color="black" onClick={addClick} disabled={isLoading}>
-        {isLoading ? 'Loading...' : 'カートに追加'}
-      </Button>
+      <Paper component="form">
+        <TextField
+          id="criteria"
+          label="消費目安(日後)"
+          name="criteria"
+          value={criteriaInput}
+          onChange={e => setCriteria(e.target.value)}
+          autoComplete="criteria"
+          autoFocus
+        />
+        <TextField
+          name="price"
+          label="値段"
+          type="price"
+          id="price"
+          value={priceInput}
+          onChange={e => setPrice(e.target.value)}
+          autoComplete="price"
+        />
+        {isError ? (
+          <Alert
+            onClose={() => {
+              setIsError(false);
+              setErrorMessage("");
+            }}
+            severity="error"
+          >
+            {errorMessage}
+          </Alert>
+        ) : null}
+        <Button color="black" onClick={addClick} disabled={isLoading}>
+          {isLoading ? 'Loading...' : 'カートに追加'}
+        </Button>
+      </Paper>
     );
   }
 
@@ -121,6 +201,22 @@ const Product: NextPage = () => {
       </div>
     );
   }
+
+  // const handleAddFavorite = async (productId) => {
+  //   // ここでお気に入り追加のAPIリクエストを送信します。
+  //   // APIリクエストが成功したら、setFavoriteを使ってステートを更新します。
+  //   setFavorite(true);
+  // };
+
+  // const handleRemoveFavorite = async (productId) => {
+  //   // ここでお気に入り削除のAPIリクエストを送信します。
+  //   // APIリクエストが成功したら、setFavoriteを使ってステートを更新します。
+  //   setFavorite(false);
+  // };
+
+  
+
+  
   
 
   return (
@@ -169,13 +265,18 @@ const Product: NextPage = () => {
                   <p>Maker ID: {product.maker_id}</p>
                   <p>Maker Name: {product.maker_name}</p>
                   <Link href={`http://localhost:3000/product/${product.id}`}>Show</Link>
-                  <AddCartButton className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" item={{
-                    criteria: 0,
-                    price: 0,
-                    item_id: 0
-                  }} />
-                  <GrFavorite />
-                  <MdFavorite />
+                  <AddCartButton item_id={product.item_id} 
+                    className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                  />
+                  {favorite ? (
+                    <IconButton onClick={() => handleRemoveFavorite(product.id)}>
+                      <MdFavorite />
+                    </IconButton>
+                  ) : (
+                    <IconButton onClick={() => handleAddFavorite(product.id)}>
+                      <GrFavorite />
+                    </IconButton>
+                  )}
                 </li>
               ))}
             </div>

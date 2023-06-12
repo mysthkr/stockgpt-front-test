@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactNode, ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState, SetStateAction } from "react";
+import { ReactNode, ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState, SetStateAction, useEffect } from "react";
 import useSWR, { useSWRConfig,Key, SWRResponse, mutate, Cache } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
@@ -52,6 +52,47 @@ const Grocery: NextPage = () => {
     router.push('/product');
   };
 
+  // START HERE for fetchAllCriteriaData
+  const fetchAllData = async () => {
+    const cookieData = getCookie();
+    const response = await fetch("http://localhost:3010/api/v1/criteria_days",{
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+        "uid": cookieData?.uid || "",
+        "client": cookieData?.client || "",
+        "access-token": cookieData?.accessToken || "",
+      },
+    });
+    const data = await response.json();
+    return data;
+  }
+
+  // interface AllData {
+  //   data: Array<{ item_id: number, criteria: string }>;
+  // }
+  const [allData, setAllData] = useState({ data: [] });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchAllData();
+      setAllData(data);
+    }
+    fetchData();
+  }, []);
+
+  const displayItemData = (itemId: number) => {
+    // const allData: AllData = { data: [] };
+    const itemData = allData.data.find(data => data.item_id === itemId);
+    if (itemData) {
+      console.log(itemData);
+      return itemData.criteria;
+    } else {
+      return null;
+    }
+  }
+  // END HERE
+
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <Skeleton>Loading...</Skeleton>;
 
@@ -78,7 +119,8 @@ const Grocery: NextPage = () => {
 
   const AddCartButton: React.FC<AddCartButtonProps> = ({ className , item_id}) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [criteriaInput, setCriteria] = useState('');
+    const [criteriaInput, setCriteria] = useState(displayItemData(item_id) ? 
+    displayItemData(item_id) : '');
     const [priceInput, setPrice] = useState('');
 
     const addClick = async () => {
@@ -108,7 +150,8 @@ const Grocery: NextPage = () => {
         // この部分でレスポンスを処理します...
         const data = await response.json();
         toast.success("カートに追加しました！");
-        setCriteria('');
+        displayItemData(item_id) ? setCriteria(displayItemData(item_id)) 
+        : setCriteria('');
         setPrice('');
       } catch (error) {
         console.error('An error occurred:', error);
@@ -194,12 +237,12 @@ const Grocery: NextPage = () => {
         }
         // この部分でレスポンスを処理します...
         const data = await response.json();
-        toast.success("カートに追加しました！");
+        toast.success("買い物リストに追加しました！");
         // setCriteria('');
         // setPrice('');
       } catch (error) {
         console.error('An error occurred:', error);
-        toast.error("カートに追加できません！");
+        toast.error("買い物リストに追加できません！");
       } finally {
         setIsLoading(false);
       }
@@ -388,9 +431,6 @@ const Grocery: NextPage = () => {
                   <AddListButton item_id={grocery.item_id}
                   className="text-white bg-indigo-500 border-0 py-2 px-8 
                   focus:outline-none hover:bg-indigo-600 rounded text-lg" />
-                  
-
-
                 </li>
               ))}
             </div>

@@ -331,10 +331,7 @@ const ToBuyList: NextPage = () => {
                   <p>ID: {grocery.id}</p>
                   <p>Created at: {grocery.created_at}</p>
                   <p>Updated at: {grocery.updated_at}</p>
-                  <p>Category ToBuyList ID: {grocery.category_grocery_id}</p>
-                  <p>Category ToBuyList Name: {grocery.category_grocery_name}</p>
-                  <p>Sub Category ToBuyList ID: {grocery.sub_category_grocery_id}</p>
-                  <p>Sub Category ToBuyList Name: {grocery.sub_category_grocery_name}</p>
+                  <p>Buy Flag: {grocery.buy_flag ? "true" : "false"}</p>
                   <p>Item ID: {grocery.item_id}</p>
                   <p>Item Name: {grocery.item_name}</p>
                   <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>

@@ -311,6 +311,7 @@ const Product: NextPage = () => {
                   <p>Item Name: {product.item_name}</p>
                   <p>Maker ID: {product.maker_id}</p>
                   <p>Maker Name: {product.maker_name}</p>
+                  <img src={`/images/${product.picture}.png`} alt="item" />
                   <Link href={`http://localhost:3000/product/${product.id}`}>Show</Link>
                   <AddCartButton item_id={product.item_id} 
                     className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"

@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactNode, ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState, SetStateAction } from "react";
+import { ReactNode, ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useReducer, useState, SetStateAction, useEffect } from "react";
 import useSWR, { useSWRConfig,Key, SWRResponse, mutate, Cache } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
@@ -52,41 +52,98 @@ const ToBuyList: NextPage = () => {
   //   router.push('/product');
   // };
 
+  
+
+  // START HERE for fetchAllCriteriaData
+  const fetchAllData = async () => {
+    const cookieData = getCookie();
+    const response = await fetch("http://localhost:3010/api/v1/criteria_days",{
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+        "uid": cookieData?.uid || "",
+        "client": cookieData?.client || "",
+        "access-token": cookieData?.accessToken || "",
+      },
+    });
+    const data = await response.json();
+    return data;
+  }
+
+  const [allData, setAllData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchAllData();
+      setAllData(data);
+    }
+    fetchData();
+  }, []);
+
+  interface AllData {
+    data: Array<{ item_id: number, criteria: string }>;
+  }
+
+  const displayItemData = (itemId: number) => {
+    const allData: AllData = { data: [] };
+    const itemData = allData.data?.find(data => data.item_id === itemId);
+    if (itemData) {
+      return itemData.criteria;
+    } else {
+      return null;
+    }
+  }
+  // END HERE
+
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <Skeleton>Loading...</Skeleton>;
 
-
-  // const { data, error } = useSWR(
-  //   `http://localhost:3010/api/v1/groceries/${text}`,
-  //   fetcher
-  // );
-
-  // console.log(data);
-
-  // const { mutate } = useSWRConfig()
-
-  // const onSubmitHandler = (event: { preventDefault: () => void; }) => {
-  //   event.preventDefault();
-  //   console.log(text);
-  // };
+  const deleteClick = async (toBuyListId: number) => {
+    setIsLoading(true);
+    const cookieData = getCookie();
+    try {
+      const response = await fetch(`http://localhost:3010/api/v1/to_buy_lists/${toBuyListId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          "uid": cookieData?.uid || "",
+          "client": cookieData?.client || "",
+          "access-token": cookieData?.accessToken || "",
+        },
+      })
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      // この部分でレスポンスを処理します...
+      const data = await response.json();
+      toast.success("買い物リストから削除しました！");
+      mutate('http://localhost:3010/api/v1/to_buy_lists');
+    } catch (error) {
+      console.error('An error occurred:', error);
+      toast.error("削除できません！");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   interface AddCartButtonProps {
     className: string;
     item_id: number;
   }
 
+  
+
   const AddCartButton: React.FC<AddCartButtonProps> = ({ className , item_id}) => {
     const [isLoading, setIsLoading] = useState(false);
-    // const [criteriaInput, setCriteria] = useState('');
-    // const [priceInput, setPrice] = useState('');
 
     const addClick = async () => {
       setIsLoading(true);
       const cookieData = getCookie();
       try {
         const item = {
-          // criteria: Number(criteriaInput),
-          // price: Number(priceInput),
+          criteria: Number(displayItemData(Number(item_id)) ? displayItemData(Number(item_id)) : 0),
           item_id: Number(item_id),
         }
         const response = await fetch('http://localhost:3010/api/v1/carts', {
@@ -274,19 +331,17 @@ const ToBuyList: NextPage = () => {
                   <p>ID: {grocery.id}</p>
                   <p>Created at: {grocery.created_at}</p>
                   <p>Updated at: {grocery.updated_at}</p>
-                  <p>Category ToBuyList ID: {grocery.category_grocery_id}</p>
-                  <p>Category ToBuyList Name: {grocery.category_grocery_name}</p>
-                  <p>Sub Category ToBuyList ID: {grocery.sub_category_grocery_id}</p>
-                  <p>Sub Category ToBuyList Name: {grocery.sub_category_grocery_name}</p>
+                  <p>Buy Flag: {grocery.buy_flag ? "true" : "false"}</p>
                   <p>Item ID: {grocery.item_id}</p>
                   <p>Item Name: {grocery.item_name}</p>
                   <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
                   <AddCartButton item_id={grocery.item_id}
                   className="text-white bg-indigo-500 border-0 py-2 px-8 
                   focus:outline-none hover:bg-indigo-600 rounded text-lg" />
-                  
-
-
+                  <Button color="error" onClick={() => deleteClick(grocery.id)}>delete</Button>
+                  {displayItemData(grocery.item_id) ? (
+                    <p>デフォルトの目安消費日：{displayItemData(grocery.item_id)}日後</p>
+                  ) : null}
                 </li>
               ))}
             </div>

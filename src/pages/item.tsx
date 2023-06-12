@@ -25,6 +25,8 @@ const Product: NextPage = () => {
           <p>Updated at: {item.updated_at}</p>
           <p>name: {item.name}</p>
           <p>criteria: {item.criteria}</p>
+          {item.picture && <img src={`/images/${item.picture}.png`} alt="item" />}
+          <p>{item.picture}</p>
           <Link href={`http://localhost:3000/item/${item.id}`}>Show</Link>
         </li>
       ))}

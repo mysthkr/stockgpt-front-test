@@ -31,7 +31,7 @@ const fetcher = (url: string) => {
 
 const Cart: NextPage = () => {
   const { data, error } = useSWR(
-    "http://localhost:3010/api/v1/carts",
+    "http://localhost:3010/api/v1/criteria_days",
     fetcher
   );
   const [isError, setIsError] = useState<boolean>(false);
@@ -129,12 +129,7 @@ const Cart: NextPage = () => {
     const [quantityInput, setQuantity] = useState('');
     const date = new Date();
     const newDate = addDays(date, Number(criteriaInput));
-    const [alarmDate, setAlarmDate] = useState(displayItemData(item_id) ? 
-      (Number(displayItemData(item_id)) === 1 ? // 入力が1の場合のみ、1日を加算
-        addDays(date, 1) 
-        : addDays(date, Number(displayItemData(item_id))// 入力が以外
-          -Math.ceil(Number(displayItemData(item_id))/10)))
-      : newDate);
+    const [alarmDate, setAlarmDate] = useState(newDate);
     const [criteriaDate, setCriteriaDate] = useState(newDate);
 
     const stockClick = async () => {
@@ -194,9 +189,9 @@ const Cart: NextPage = () => {
                 setAlarmDate(addDays(date, Number(input)-Math.ceil(Number(input)/10)));
               }
             } else {
-              // setErrorMessage("数字は半角で入力してください。");
-              toast.error("数字は半角で入力してください。");
-              // setIsError(true);
+              setErrorMessage("数字は半角で入力してください。");
+              // toast.error("数字は半角で入力してください。");
+              setIsError(true);
             }
           }}
           autoComplete="criteria"
@@ -213,9 +208,9 @@ const Cart: NextPage = () => {
               setPrice(e.target.value)
             }
             else {
-              // setErrorMessage("数字は半角で入力してください。");
-              toast.error("数字は半角で入力してください。");
-              // setIsError(true);
+              setErrorMessage("数字は半角で入力してください。");
+              // toast.error("数字は半角で入力してください。");
+              setIsError(true);
             }
           }}
           autoComplete="price"
@@ -232,9 +227,9 @@ const Cart: NextPage = () => {
               setQuantity(e.target.value)
             }
             else {
-              // setErrorMessage("数字は半角で入力してください。");
-              toast.error("数字は半角で入力してください。");
-              // setIsError(true);
+              setErrorMessage("数字は半角で入力してください。");
+              // toast.error("数字は半角で入力してください。");
+              setIsError(true);
             }
           }}
           autoComplete="quantity"
@@ -285,7 +280,6 @@ const Cart: NextPage = () => {
                   <p>group_id: {cart.group_id}</p>
                   <p>item_id: {cart.item_id}</p>
                   <p>Discarded at: {cart.discarded_at}</p>
-                  <p>Item Name: {cart.item_name}</p>
                   <Link href={`http://localhost:3000/cart/${cart.id}`}>Show</Link>
                   <Button variant="contained" color="error" onClick={() => deleteClick(cart.id)}>delete</Button>
                   

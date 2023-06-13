@@ -13,7 +13,9 @@ export const getCookie = () => {
       const uid: string = arr['uid'];
       const client: string = arr['client'];
       const accessToken: string = arr['access-token'];
-      return {uid, client, accessToken};
+      const userId: string = arr['id'];
+      const groupId: string = arr['group_id'];
+      return {uid, client, accessToken, userId, groupId};
     }
   }
 }

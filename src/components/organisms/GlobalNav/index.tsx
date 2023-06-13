@@ -72,6 +72,17 @@ const Header = () => {
               </Link>
             </Box>
           </NavLink>
+          <NavLink>
+            <Box display={{ base: 'none', md: 'block' }}>
+              <Link href="/criteria_day" passHref>
+                <Anchor as="a">
+                  <Text>
+                    カスタマイズ
+                  </Text>
+                </Anchor>
+              </Link>
+            </Box>
+          </NavLink>
         </Nav>
         <Nav as="nav" height="56px" alignItems="center">
           <NavLink>
@@ -88,16 +99,7 @@ const Header = () => {
               } else if (isLoading) {
                 // ロード中はスピナーを表示
                 return <Spinner size={20} strokeWidth={2} />
-              } else {
-                // サインインしてない場合はアイコンを表示
-                return (
-                  <Link href="/signin" passHref>
-                    <Anchor as="a">
-                      <PersonIcon size={24} />
-                    </Anchor>
-                  </Link>
-                )
-              }
+              } 
             })()}
           </NavLink>
           <NavLink>

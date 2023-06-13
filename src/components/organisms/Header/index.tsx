@@ -15,6 +15,9 @@ import Flex from 'components/layout/Flex'
 import BadgeIconButton from 'components/molecules/BadgeIconButton'
 import { useAuthContext } from 'contexts/AuthContext'
 import { withAuthServerSideProps } from "lib/auth";
+import { getCookie } from "lib/getCookie";
+
+
 
 // ヘッダーのルート
 const HeaderRoot = styled.header`
@@ -45,7 +48,12 @@ const Anchor = styled(Text)`
  * ヘッダー
  */
 const Header = () => {
-  const { authUser, isLoading } = useAuthContext()
+  const { isLoading } = useAuthContext()
+  const cookieData = getCookie();
+  const userId = cookieData ? cookieData.userId : '';
+  const groupId = cookieData ? cookieData.groupId : '';
+  console.log("userId, groupId");
+  console.log(userId, groupId);
 
   return (
     <HeaderRoot>
@@ -59,16 +67,19 @@ const Header = () => {
             </Link>
           </NavLink>
           <NavLink>
-            <Box display={{ base: 'none', md: 'block' }}>
-              <Text>
-                カテゴリ
-              </Text>
-            </Box>
+            <Link href="/grocery" passHref>
+              <Button as="a">食料品</Button>
+            </Link>
+          </NavLink>
+          <NavLink>
+            <Link href="/product" passHref>
+              <Button as="a">日用品</Button>
+            </Link>
           </NavLink>
           <NavLink>
             <Box display={{ base: 'none', md: 'block' }}>
               <Text>
-                サブカテゴリ
+                カテゴリ
               </Text>
             </Box>
           </NavLink>
@@ -98,13 +109,20 @@ const Header = () => {
           <NavLink>
             {(() => {
               // 認証していたらアイコンを表示
-              if (authUser) {
+              if (userId) {
                 return (
-                  <Link href={`/users/${authUser.id}`} passHref>
+                  <>
+                    <Link href={`/users/${userId}`} passHref>
+                      <Anchor as="a">
+                        
+                      </Anchor>
+                    </Link>
+                    <Link href={`/profile/${userId}`}  passHref>
                     <Anchor as="a">
-                      
-                    </Anchor>
-                  </Link>
+                      <PersonIcon size={24} />
+                      </Anchor>
+                    </Link>
+                  </>
                 )
               } else if (isLoading) {
                 // ロード中はスピナーを表示
@@ -122,9 +140,6 @@ const Header = () => {
                       <Anchor as="a">
                         サインアップ
                       </Anchor>
-                    </Link>
-                    <Link href="/profile/1" passHref>
-                      プロフィール
                     </Link>
                   </>
                 )

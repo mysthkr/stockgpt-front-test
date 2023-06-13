@@ -4,21 +4,48 @@ import React, { useReducer, useState } from "react";
 import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
 import useSWR from "swr";
 import router from 'next/router';
-import { withAuthServerSideProps } from "../../lib/auth";
+import { withAuthServerSideProps, withAuthFetch } from "../../lib/auth";
 import { GetServerSideProps } from "next";
 import Text from '../../components/atoms/Text'
 import Box from '../../components/layout/Box'
 import Flex from '../../components/layout/Flex'
 import Layout from '../../components/templates/Layout'
+import { getCookie } from "lib/getCookie";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+// const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 
-export const getServerSideProps: GetServerSideProps =
-  withAuthServerSideProps(`profiles`);
+// export const getServerSideProps: GetServerSideProps =
+//   withAuthServerSideProps(`profiles`);
 
-const Profile = (props: any) => {
-  console.log(props.data[0])
+export async function getServerSideProps(context: { query?: any; req?: any; res?: any; }) {
+  const { req, res } = context;
+  const { id } = context.query;
+
+  const response = await withAuthFetch(`profiles/${id}`, req.cookies);
+  console.log(response.headers);
+  if (!response.ok && response.status === 401) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+  // TODO: 他にも500エラーを考慮した分岐も必要
+  // const props = await response.json();
+  const data = await response.json();
+  if (Array.isArray(data)) {
+    return { props: { data: data } };
+  }
+  return { props: { data } };
+};
+
+
+const Profile = (props: any, id: number) => {
+  const cookieData = getCookie();
+  const userId = cookieData ? cookieData.userId : '';
+  const groupId = cookieData ? cookieData.groupId : '';
   return (
     <Layout {...props}>
       <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
@@ -36,8 +63,8 @@ const Profile = (props: any) => {
             <p>user ID: {props.data[0].user_id}</p>
             <p>Name: {props.data[0].name}</p>
             <p>Nickname: {props.data[0].nickname}</p>
-            <Link href={`http://localhost:3000/profile`}>編集</Link>
-            <Link href={`http://localhost:3000/profile`}>削除</Link>
+            <Link href={`http://localhost:3000/profile/${userId}/edit`}>編集</Link>
+            <Link href={`http://localhost:3000/profile/${id}`}>削除</Link>
           </li>
           </Box>
         </Flex>

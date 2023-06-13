@@ -52,6 +52,52 @@ const Product: NextPage = () => {
     router.push('/grocery');
   };
 
+    // START HERE for fetchAllCriteriaData
+    const fetchFavoriteAllData = async () => {
+      const cookieData = getCookie();
+      const response = await fetch("http://localhost:3010/api/v1/favorites",{
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          "uid": cookieData?.uid || "",
+          "client": cookieData?.client || "",
+          "access-token": cookieData?.accessToken || "",
+        },
+      });
+      const data = await response.json();
+      return data;
+    }
+  
+    // interface AllData {
+    //   data: Array<{ item_id: number, criteria: string }>;
+    // }
+    // const [allFavoriteData, setAllFavoriteData] = useState({ data: [] });
+    const [favorites, setFavorites] = useState<{ [itemId: string]: boolean }>({});
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        const data = await fetchFavoriteAllData();
+        const favoriteItems: { [itemId: string]: boolean } = {};
+        data.data.forEach(item => {
+          favoriteItems[item.item_id] = true;
+        });
+        setFavorites(favoriteItems);
+      }
+      fetchData();
+    }, []);
+  
+    // const displayFavoriteData = (itemId: number) => {
+    //   // const allData: AllData = { data: [] };
+    //   const itemData = allFavoriteData.data.find(data => data.item_id === itemId);
+    //   if (itemData) {
+    //     console.log(itemData);
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // }
+    // END HERE
+
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <Skeleton>Loading...</Skeleton>;
 
@@ -69,6 +115,8 @@ const Product: NextPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [criteriaInput, setCriteria] = useState('');
     const [priceInput, setPrice] = useState('');
+    // const [favoriteInput, setFavorite] = useState(displayFavoriteData(item_id) ? 
+    // true : false);
 
     const addClick = async () => {
       setIsLoading(true);
@@ -186,6 +234,7 @@ const Product: NextPage = () => {
         }
         // この部分でレスポンスを処理します...
         const data = await response.json();
+        setFavorites({ ...favorites, [itemId]: true });
         toast.success("お気に入りしました！");
       } catch (error) {
         console.error('An error occurred:', error);
@@ -196,13 +245,16 @@ const Product: NextPage = () => {
     setFavorite(true);
   };
 
-  const handleRemoveFavorite = async (productId: number) => {
+  const handleRemoveFavorite = async (itemId: number) => {
     // ここでお気に入り削除のAPIリクエストを送信します。
     // APIリクエストが成功したら、setFavoriteを使ってステートを更新します。
     setIsLoading(true);
       const cookieData = getCookie();
+      console.log("delete favorite")
+      console.log(cookieData);
+      console.log(itemId);
       try {
-        const response = await fetch(`http://localhost:3010/api/v1/favorites/${productId}`, {
+        const response = await fetch(`http://localhost:3010/api/v1/favorites/${itemId}`, {
           method: 'DELETE',
           credentials: 'include',
           headers: {
@@ -217,6 +269,10 @@ const Product: NextPage = () => {
         }
         // この部分でレスポンスを処理します...
         const data = await response.json();
+        
+        const newFavorites = { ...favorites };
+        delete newFavorites[itemId];
+        setFavorites(newFavorites);
         toast.success("お気に入り解除しました！");
       } catch (error) {
         console.error('An error occurred:', error);
@@ -224,43 +280,6 @@ const Product: NextPage = () => {
       } finally {
         setIsLoading(false);
       }
-    setFavorite(true);
-  };
-
-  const getInitialFavorites = async ()=> {
-    const cookieData = getCookie();
-    const axiosInstance = axios.create({
-      baseURL: `http://localhost:3010/api/v1/`,
-    });
-    (async () => {
-      setIsError(false);
-      setErrorMessage("");
-      return await axiosInstance
-        .get("favorites", {
-          // credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            "uid": cookieData?.uid || "",
-            "client": cookieData?.client || "",
-            "access-token": cookieData?.accessToken || "",
-          },
-        })
-        .then(function (response) {
-          // Cookieにトークンをセットしています
-          Cookies.set("uid", response.headers["uid"]);
-          Cookies.set("client", response.headers["client"]);
-          Cookies.set("access-token", response.headers["access-token"]);
-          console.log("response");
-          console.log(response);
-          const data = response.data.json()
-          console.log(data);
-        })
-        .catch(function (error) {
-          // Cookieからトークンを削除しています
-          setIsError(true);
-          setErrorMessage(error.response.data.errors[0]);
-        });
-    })();
   };
 
   
@@ -316,7 +335,7 @@ const Product: NextPage = () => {
                   <AddCartButton item_id={product.item_id} 
                     className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                   />
-                  {favorite ? (
+                  {favorites[product.item_id] ? (
                     <IconButton onClick={() => handleRemoveFavorite(product.item_id)}>
                       <MdFavorite />
                     </IconButton>

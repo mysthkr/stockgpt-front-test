@@ -42,6 +42,8 @@ const Login = () => {
           Cookies.set("uid", response.headers["uid"]);
           Cookies.set("client", response.headers["client"]);
           Cookies.set("access-token", response.headers["access-token"]);
+          Cookies.set("id", response.data.data["id"]);
+          Cookies.set("group_id", response.data.data["group_id"]);
           router.push("/home");
         })
         .catch(function (error) {

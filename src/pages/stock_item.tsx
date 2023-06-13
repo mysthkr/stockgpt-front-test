@@ -1,10 +1,11 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useState } from "react";
+import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useState, useEffect } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Button } from "@mui/material";
+import { Button, Grid, Switch } from "@mui/material";
+import IOSSwitch from "components/atoms/IosSwitch";
 import { getCookie } from "lib/getCookie";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
@@ -33,7 +34,28 @@ const StockItem: NextPage = () => {
     fetcher
   );
   const [isLoading, setIsLoading] = useState(false);
+  console.log(data);
   const { mutate } = useSWRConfig();
+  const [sortedData, setSortedData] = useState([]);
+  const [isSorted, setIsSorted] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setSortedData(data.data);
+    }
+  }, [data]);
+  
+
+  const handleSortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsSorted(event.target.checked);
+    if (event.target.checked) {
+      const sorted = [...sortedData].sort((a, b) => ((a.alarm_date < b.alarm_date) ? -1 : 1));
+      setSortedData(sorted);
+    } else {
+      // Switchがオフの時は元のデータをセットします
+      setSortedData(data.data);
+    }
+  };
 
   if (error) return <div>An error has occurred.</div>;
   if (!data) return <div>Loading...</div>;
@@ -67,6 +89,7 @@ const StockItem: NextPage = () => {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <Layout {...data}>
@@ -78,9 +101,20 @@ const StockItem: NextPage = () => {
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <Box width="100%">
+          <Grid component="label" container alignItems="center" spacing={1}>
+            <Grid item>登録順</Grid>
+            <Grid item>
+              <IOSSwitch
+                checked={isSorted}
+                onChange={handleSortChange}
+                inputProps={{ 'aria-label': 'Sort items' }}
+              />
+            </Grid>
+            <Grid item>アラーム日順</Grid>
+          </Grid>
           <Toaster />
             <div >
-              {data.data.map((stock_item: any) => (
+              {sortedData.map((stock_item: any) => (
                 <li className='p-4' key={stock_item.id}>
                   <p>ID: {stock_item.id}</p>
                   <p>Created at: {stock_item.created_at}</p>

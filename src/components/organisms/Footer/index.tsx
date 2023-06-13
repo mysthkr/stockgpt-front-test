@@ -26,12 +26,7 @@ const Footer = () => {
           <nav>
             <Box marginBottom={2}>
               <Link href="/" passHref>
-                <Anchor as="a">トップ</Anchor>
-              </Link>
-            </Box>
-            <Box marginBottom={2}>
-              <Link href="/" passHref>
-                <Anchor as="a">採用</Anchor>
+                <Anchor as="a">ホーム</Anchor>
               </Link>
             </Box>
             <Box marginBottom={2}>
@@ -56,18 +51,13 @@ const Footer = () => {
                 <Anchor as="a">プライバシーポリシー</Anchor>
               </Link>
             </Box>
-            <Box marginBottom={2}>
-              <Link href="/" passHref>
-                <Anchor as="a">配送と返品</Anchor>
-              </Link>
-            </Box>
           </nav>
         </Box>
         <Box minWidth={{ base: '100%', md: '120px' }}>
           <nav>
             <Anchor
               as="a"
-              href="https://github.com/gihyo-book/ts-nextbook-app"
+              href=""
               target="_blank"
             >
               <GitHubIcon size={22} />
@@ -76,7 +66,7 @@ const Footer = () => {
         </Box>
       </Flex>
       <Box paddingTop={3} paddingBottom={2}>
-        <Text>© 2021 Gijutsuhyoronsha Co., Ltd.. All rights reserved.</Text>
+        <Text>© 2023 Miyashita GPT.</Text>
       </Box>
     </footer>
   )

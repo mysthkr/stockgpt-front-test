@@ -4,7 +4,7 @@ import { ReactNode, ReactElement, JSXElementConstructor, ReactFragment, ReactPor
 import useSWR, { useSWRConfig,Key, SWRResponse, mutate, Cache } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Alert, Skeleton, Tab, Tabs, TextField, Typography,Paper } from '@mui/material';
+import { Alert, Skeleton, Tab, Tabs, TextField, Typography,Paper, IconButton } from '@mui/material';
 import { TabPanel } from "@mui/lab";
 import { ItemDialog } from "components/organisms/ItemDialog";
 import Box from 'components/layout/Box'
@@ -19,6 +19,8 @@ import { getCookie } from "lib/getCookie";
 import React from "react";
 import { AppProps } from 'next/app';
 import toast, { Toaster } from 'react-hot-toast';
+import { MdFavorite } from "react-icons/md";
+import { GrFavorite } from "react-icons/gr";
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
@@ -38,12 +40,15 @@ const Grocery: NextPage = () => {
   const router = useRouter();
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  // checkCookie();
+  const [favorite, setFavorite] = useState(false);
+
   const [text, setText] = useState('');
   const { data, error } = useSWR(
     `http://localhost:3010/api/v1/groceries`,
     fetcher
   );
+  const [itemData, setItemData] = useState<any[]>([]);
+  
   const [isLoading, setIsLoading] = useState(false);
 
   const [value, setValue] = useState(0);
@@ -51,6 +56,12 @@ const Grocery: NextPage = () => {
     setValue(newValue);
     router.push('/product');
   };
+
+  useEffect(() => {
+    if (data) {
+      setItemData(data.data);
+    }
+  }, [data]);
 
   // START HERE for fetchAllCriteriaData
   const fetchAllData = async () => {
@@ -67,23 +78,51 @@ const Grocery: NextPage = () => {
     const data = await response.json();
     return data;
   }
+  // START HERE for fetchAllCriteriaData
+  const fetchFavoriteAllData = async () => {
+    const cookieData = getCookie();
+    const response = await fetch("http://localhost:3010/api/v1/favorites",{
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+        "uid": cookieData?.uid || "",
+        "client": cookieData?.client || "",
+        "access-token": cookieData?.accessToken || "",
+      },
+    });
+    const data = await response.json();
+    return data;
+  }
 
   // interface AllData {
   //   data: Array<{ item_id: number, criteria: string }>;
   // }
-  const [allData, setAllData] = useState({ data: [] });
+  const [allData, setAllData] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<{ [itemId: string]: boolean }>({});
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchAllData();
-      setAllData(data);
+      setAllData(data.data);
     }
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchFavoriteData = async () => {
+      const data = await fetchFavoriteAllData();
+      const favoriteItems: { [itemId: string]: boolean } = {};
+      data.data.forEach((item: { item_id: string | number; }) => {
+        favoriteItems[item.item_id] = true;
+      });
+      setFavorites(favoriteItems);
+    }
+    fetchFavoriteData();
+  }, []);
+
   const displayItemData = (itemId: number) => {
     // const allData: AllData = { data: [] };
-    const itemData = allData.data.find(data => data.item_id === itemId);
+    const itemData = allData.find((data: any) => data.item_id === itemId);
     if (itemData) {
       console.log(itemData);
       return itemData.criteria;
@@ -109,6 +148,13 @@ const Grocery: NextPage = () => {
   // const onSubmitHandler = (event: { preventDefault: () => void; }) => {
   //   event.preventDefault();
   //   console.log(text);
+  // };
+
+  // const handleClick = async () => {
+  //   const data = await fetchAllData();
+  //   setAllData(data.data);
+  //   const itemData = displayItemData(1);
+  //   console.log(itemData);
   // };
 
   interface AddCartButtonProps {
@@ -199,11 +245,6 @@ const Grocery: NextPage = () => {
     );
   }
 
-  interface AddCartButtonProps {
-    className: string;
-    // item: {criteria: number, price: number, item_id: number}
-    item_id: number;
-  }
 
   interface AddListButtonProps {
     className: string;
@@ -276,7 +317,8 @@ const Grocery: NextPage = () => {
     // clickSubmit(e.target.value);
   }
 
-  const clickSubmit = (e: any) => {
+  const clickSubmit = async (e: any) => {
+    e.preventDefault(); 
     console.log("送信されました");
     console.log(text);
     const cookieData = getCookie();
@@ -285,11 +327,10 @@ const Grocery: NextPage = () => {
     const axiosInstance = axios.create({
       baseURL: `http://localhost:3010/api/v1/`,
     });
-    (async () => {
       setIsError(false);
       setErrorMessage("");
-      return await axiosInstance
-        .post("searches", {
+      try {
+        const response = await axiosInstance.post("searches", {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
@@ -298,23 +339,19 @@ const Grocery: NextPage = () => {
             "access-token": cookieData?.accessToken || "",
           },
           data: text,
-        })
-        .then(function (response) {
-          // Cookieにトークンをセットしています
-          Cookies.set("uid", response.headers["uid"]);
-          Cookies.set("client", response.headers["client"]);
-          Cookies.set("access-token", response.headers["access-token"]);
-          const data = response.data.json()
-          console.log("search_response");
-          console.log(data);
-        })
-        .catch(function (error) {
-          // Cookieからトークンを削除しています
-          setIsError(true);
-          setErrorMessage(error.response.data.errors[0]);
         });
-    })();
-  }
+        console.log("search_response");
+        console.log(response.data);
+        setItemData(response.data);
+      } catch (error: any) {
+        setIsError(true);
+        if (error.response && error.response.data && error.response.data.errors && error.response.data.errors[0]) {
+          setErrorMessage(error.response.data.errors[0]);
+        } else {
+          setErrorMessage("An error occurred");
+        }
+      }
+  };
 
   function TabPanel(props: { [x: string]: any; children: any; value: any; index: any; }) {
     const { children, value, index, ...other } = props;
@@ -336,37 +373,74 @@ const Grocery: NextPage = () => {
     );
   }
 
-  // const addClick = async () => {
-  //   setIsLoading(true);
+  const handleAddFavorite = async (itemId: number) => {
+    setIsLoading(true);
+      const cookieData = getCookie();
+      try {
+        const response = await fetch('http://localhost:3010/api/v1/favorites', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
+          },
+          body: JSON.stringify({ favorite: { item_id: itemId } }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // この部分でレスポンスを処理します...
+        const data = await response.json();
+        setFavorites({ ...favorites, [itemId]: true });
+        toast.success("お気に入りしました！");
+      } catch (error) {
+        console.error('An error occurred:', error);
+        toast.error("お気に入りできません！");
+      } finally {
+        setIsLoading(false);
+      }
+    setFavorite(true);
+  };
 
-  //   try {
-  //     const response = await fetch(`http://localhost:3010/api/v1/`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         key1: 'value1',
-  //         key2: 'value2',
-  //         // etc...
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     // この部分でレスポンスを処理します...
-  //     // const data = await response.json();
-  //     // console.log(data);
-
-  //   } catch (error) {
-  //     console.error('An error occurred:', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
+  const handleRemoveFavorite = async (itemId: number) => {
+    // ここでお気に入り削除のAPIリクエストを送信します。
+    // APIリクエストが成功したら、setFavoriteを使ってステートを更新します。
+    setIsLoading(true);
+      const cookieData = getCookie();
+      console.log("delete favorite")
+      console.log(cookieData);
+      console.log(itemId);
+      try {
+        const response = await fetch(`http://localhost:3010/api/v1/favorites/${itemId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // この部分でレスポンスを処理します...
+        const data = await response.json();
+        
+        const newFavorites = { ...favorites };
+        delete newFavorites[itemId];
+        setFavorites(newFavorites);
+        toast.success("お気に入り解除しました！");
+      } catch (error) {
+        console.error('An error occurred:', error);
+        toast.error("お気に入り解除できません！");
+      } finally {
+        setIsLoading(false);
+      }
+  };
   
   
   return (
@@ -389,7 +463,7 @@ const Grocery: NextPage = () => {
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-              {/* <onClick={() => router.push('/grocery')}> */}
+            
             </TabPanel>
             
             <TabPanel value={value} index={1}>
@@ -399,7 +473,7 @@ const Grocery: NextPage = () => {
             <Box width="100%">
               <Text>検索</Text>
               
-              <form method="POST">
+              <form method="POST" onSubmit={clickSubmit}>
               {/* テキスト入力フォーム */}
               <input 
                 className="border border-black" 
@@ -407,16 +481,15 @@ const Grocery: NextPage = () => {
                 value={text}
                 onChange={changeText}
               />
-              {/* 追加ボタン */}
+              {/* 検索ボタン */}
               <input
                 type="submit"
                 value="検索"
-                onClick={clickSubmit}
               />
               </form>
             </Box>
             <div >
-              {data.data.map((grocery: any) => (
+              {itemData.map((grocery: any) => (
                 <li className='p-4' key={grocery.id}>
                   <p>ID: {grocery.id}</p>
                   <p>Created at: {grocery.created_at}</p>
@@ -427,13 +500,23 @@ const Grocery: NextPage = () => {
                   <p>Sub Category Grocery Name: {grocery.sub_category_grocery_name}</p>
                   <p>Item ID: {grocery.item_id}</p>
                   <p>Item Name: {grocery.item_name}</p>
-                  <Link href={`http://localhost:3000/grocery/${grocery.id}`}>Show</Link>
+                  <img src={`/images/default.png`} alt="item" />
+                  <Link href={`http://localhost:3000/grocery/${grocery.id}`}>詳細</Link>
                   <AddCartButton item_id={grocery.item_id}
                   className="text-white bg-indigo-500 border-0 py-2 px-8 
                   focus:outline-none hover:bg-indigo-600 rounded text-lg" />
                   <AddListButton item_id={grocery.item_id}
                   className="text-white bg-indigo-500 border-0 py-2 px-8 
                   focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  {favorites[grocery.item_id] ? (
+                    <IconButton onClick={() => handleRemoveFavorite(grocery.item_id)}>
+                      <MdFavorite />
+                    </IconButton>
+                  ) : (
+                    <IconButton onClick={() => handleAddFavorite(grocery.item_id)}>
+                      <GrFavorite />
+                    </IconButton>
+                  )}
                 </li>
               ))}
             </div>

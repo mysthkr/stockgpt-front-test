@@ -1,10 +1,12 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode, useState, useEffect, useCallback } from "react";
+import { ReactElement, JSXElementConstructor, ReactFragment, 
+  ReactPortal, PromiseLikeOfReactNode, useState, useEffect, useCallback } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Switch, Tooltip, styled } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, 
+  IconButton, Switch, Tooltip, styled ,CircularProgress} from "@mui/material";
 import IOSSwitch from "components/atoms/IosSwitch";
 import { getCookie } from "lib/getCookie";
 import toast, { Toaster } from "react-hot-toast";
@@ -59,6 +61,7 @@ const StockItemCopy: NextPage = () => {
   const [sortedData, setSortedData] = useState([]);
   const [isSorted, setIsSorted] = useState(false);
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
+  const [isLButtonLoading, setIsButtonLoading] = useState(false);
 
   interface SelectedRow {
     id: number;
@@ -340,20 +343,7 @@ const StockItemCopy: NextPage = () => {
           </Grid>
           <Toaster />
           <List data={sortedData} />
-            {/* <div >
-              {selectedRow && (
-                <div>
-                  <p>アイテム名：{selectedRow.item_name} </p>
-                  <p>アラーム日：{selectedRow.alarm_date}</p>
-                  <p>カテゴリー：{selectedRow.category_name }</p>
-                  <p>サブカテゴリー：{selectedRow.sub_category_name }</p>
-                  <p>Criteria: {selectedRow.criteria}</p>
-                  <p>Price: {selectedRow.price}</p>
-                  <p>Quantity: {selectedRow.quantity}</p>
-                  <p>{selectedRow.picture}</p>
-                </div>
-              )}
-            </div> */}
+            
             </Box>
             
         </Flex>

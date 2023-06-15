@@ -18,7 +18,7 @@ import Cookies from "js-cookie"
 import { getCookie } from "lib/getCookie";
 import { GrFavorite } from "react-icons/gr";
 import { MdFavorite } from "react-icons/md";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
@@ -44,6 +44,8 @@ const Product: NextPage = () => {
     "http://localhost:3010/api/v1/products",
     fetcher
   );
+  const [itemData, setItemData] = useState<any[]>([]);
+  
   const [isLoading, setIsLoading] = useState(false);
 
   const [value, setValue] = useState(1);
@@ -51,7 +53,28 @@ const Product: NextPage = () => {
     setValue(newValue);
     router.push('/grocery');
   };
+  
+  useEffect(() => {
+    if (data) {
+      setItemData(data.data);
+    }
+  }, [data]);
 
+  // START HERE for fetchAllCriteriaData
+  const fetchAllData = async () => {
+    const cookieData = getCookie();
+    const response = await fetch("http://localhost:3010/api/v1/criteria_days",{
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+        "uid": cookieData?.uid || "",
+        "client": cookieData?.client || "",
+        "access-token": cookieData?.accessToken || "",
+      },
+    });
+    const data = await response.json();
+    return data;
+  }
     // START HERE for fetchAllCriteriaData
     const fetchFavoriteAllData = async () => {
       const cookieData = getCookie();
@@ -72,10 +95,19 @@ const Product: NextPage = () => {
     //   data: Array<{ item_id: number, criteria: string }>;
     // }
     // const [allFavoriteData, setAllFavoriteData] = useState({ data: [] });
+    const [allData, setAllData] = useState<any[]>([]);
     const [favorites, setFavorites] = useState<{ [itemId: string]: boolean }>({});
   
     useEffect(() => {
       const fetchData = async () => {
+        const data = await fetchAllData();
+        setAllData(data.data);
+      }
+      fetchData();
+    }, []);
+
+    useEffect(() => {
+      const fetchFavoriteData = async () => {
         const data = await fetchFavoriteAllData();
         const favoriteItems: { [itemId: string]: boolean } = {};
         data.data.forEach((item: { item_id: string | number; }) => {
@@ -83,8 +115,18 @@ const Product: NextPage = () => {
         });
         setFavorites(favoriteItems);
       }
-      fetchData();
+      fetchFavoriteData();
     }, []);
+
+    const displayItemData = (itemId: number) => {
+      const itemData = allData.find((data: any) => data.item_id === itemId);
+      if (itemData) {
+        console.log(itemData);
+        return itemData.criteria;
+      } else {
+        return null;
+      }
+    }
   
     // const displayFavoriteData = (itemId: number) => {
     //   // const allData: AllData = { data: [] };
@@ -107,16 +149,14 @@ const Product: NextPage = () => {
 
   interface AddCartButtonProps {
     className: string;
-    // item: {criteria: number, price: number, item_id: number}
     item_id: number;
   }
 
   const AddCartButton: React.FC<AddCartButtonProps> = ({ className, item_id }) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [criteriaInput, setCriteria] = useState('');
+    const [criteriaInput, setCriteria] = useState(displayItemData(item_id) ? 
+    displayItemData(item_id) : '');
     const [priceInput, setPrice] = useState('');
-    // const [favoriteInput, setFavorite] = useState(displayFavoriteData(item_id) ? 
-    // true : false);
 
     const addClick = async () => {
       setIsLoading(true);
@@ -145,7 +185,8 @@ const Product: NextPage = () => {
         // この部分でレスポンスを処理します...
         const data = await response.json();
         toast.success("カートに追加しました！");
-        setCriteria('');
+        displayItemData(item_id) ? setCriteria(displayItemData(item_id)) 
+        : setCriteria('');
         setPrice('');
       } catch (error) {
         console.error('An error occurred:', error);
@@ -193,13 +234,77 @@ const Product: NextPage = () => {
     );
   }
 
+  interface AddListButtonProps {
+    className: string;
+    // item: {criteria: number, price: number, item_id: number}
+    item_id: number;
+  }
+  const AddListButton: React.FC<AddListButtonProps> = ({ className , item_id}) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const addClick = async () => {
+      setIsLoading(true);
+      const cookieData = getCookie();
+      try {
+        const item = {
+          item_id: Number(item_id),
+        }
+        const response = await fetch('http://localhost:3010/api/v1/to_buy_lists', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
+          },
+          body: JSON.stringify(item),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // この部分でレスポンスを処理します...
+        const data = await response.json();
+        toast.success("買い物リストに追加しました！");
+        // setCriteria('');
+        // setPrice('');
+      } catch (error) {
+        console.error('An error occurred:', error);
+        toast.error("買い物リストに追加できません！");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    return (
+      <Paper component="form">
+        
+        {isError ? (
+          <Alert
+            onClose={() => {
+              setIsError(false);
+              setErrorMessage("");
+            }}
+            severity="error"
+          >
+            {errorMessage}
+          </Alert>
+        ) : null}
+        <Button color="black" onClick={addClick} disabled={isLoading}>
+          {isLoading ? 'Loading...' : '買い物リストに追加'}
+        </Button>
+      </Paper>
+    );
+  }
+
   //検索機能
   const changeText = (e: any) => {
     setText(e.target.value);
-    // clickSubmit(e.target.value);
   }
 
-  const clickSubmit = (e: any) => {
+  const clickSubmit = async (e: any) => {
+    e.preventDefault(); 
     console.log("送信されました");
     console.log(text);
     const cookieData = getCookie();
@@ -208,36 +313,31 @@ const Product: NextPage = () => {
     const axiosInstance = axios.create({
       baseURL: `http://localhost:3010/api/v1/`,
     });
-    (async () => {
       setIsError(false);
       setErrorMessage("");
-      return await axiosInstance
-        .post("searches", {
+      try {
+        const response = await axiosInstance.post("searches", {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
             "uid": cookieData?.uid || "",
             "client": cookieData?.client || "",
             "access-token": cookieData?.accessToken || "",
-            "product_flag": true,
           },
           data: text,
-        })
-        .then(function (response) {
-          // Cookieにトークンをセットしています
-          Cookies.set("uid", response.headers["uid"]);
-          Cookies.set("client", response.headers["client"]);
-          Cookies.set("access-token", response.headers["access-token"]);
-          const data = response.data.json()
-          console.log(data);
-        })
-        .catch(function (error) {
-          // Cookieからトークンを削除しています
-          setIsError(true);
-          setErrorMessage(error.response.data.errors[0]);
         });
-    })();
-  }
+        console.log("search_response");
+        console.log(response.data);
+        setItemData(response.data);
+      } catch (error: any) {
+        setIsError(true);
+        if (error.response && error.response.data && error.response.data.errors && error.response.data.errors[0]) {
+          setErrorMessage(error.response.data.errors[0]);
+        } else {
+          setErrorMessage("An error occurred");
+        }
+      }
+  };
 
   function TabPanel(props: { [x: string]: any; children: any; value: any; index: any; }) {
     const { children, value, index, ...other } = props;
@@ -341,8 +441,7 @@ const Product: NextPage = () => {
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <Box width="100%">
-            
-
+          <Toaster />
             <Box>
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                 <Tab label="食料品"  value={0} />
@@ -350,17 +449,12 @@ const Product: NextPage = () => {
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-              
             </TabPanel>
-            
             <TabPanel value={value} index={1}>
-            
             </TabPanel>
-
             <Box width="100%">
               <Text>検索</Text>
-              
-              <form method="POST">
+              <form method="POST" onSubmit={clickSubmit}>
               {/* テキスト入力フォーム */}
               <input 
                 className="border border-black" 
@@ -368,17 +462,15 @@ const Product: NextPage = () => {
                 value={text}
                 onChange={changeText}
               />
-              {/* 追加ボタン */}
+              {/* 検索ボタン */}
               <input
                 type="submit"
                 value="検索"
-                onClick={clickSubmit}
               />
             </form>
             </Box>
-
             <div >
-              {data.data.map((product: any, index: number) => (
+              {itemData.map((product: any) => (
                 <li className='p-4' key={product.id}>
                   <p>ID: {product.id}</p>
                   <p>Picture: {product.picture}</p>
@@ -393,10 +485,15 @@ const Product: NextPage = () => {
                   <p>Maker ID: {product.maker_id}</p>
                   <p>Maker Name: {product.maker_name}</p>
                   <img src={`/images/${product.picture}.png`} alt="item" />
-                  <Link href={`http://localhost:3000/product/${product.id}`}>Show</Link>
+                  <Link href={`http://localhost:3000/product/${product.id}`}>詳細</Link>
                   <AddCartButton item_id={product.item_id} 
-                    className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                    className="text-white bg-indigo-500 border-0 py-2 px-8 
+                    focus:outline-none hover:bg-indigo-600 rounded text-lg"
                   />
+                  <AddListButton item_id={product.item_id}
+                  className="text-white bg-indigo-500 border-0 py-2 px-8 
+                  focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                
                   {favorites[product.item_id] ? (
                     <IconButton onClick={() => handleRemoveFavorite(product.item_id)}>
                       <MdFavorite />

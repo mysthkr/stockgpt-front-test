@@ -13,10 +13,11 @@ import Text from 'components/atoms/Text'
 import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import BadgeIconButton from 'components/molecules/BadgeIconButton'
-import { useAuthContext } from 'contexts/AuthContext'
 import { withAuthServerSideProps } from "lib/auth";
 import { getCookie } from "lib/getCookie";
-
+import ArchiveIcon from '@mui/icons-material/Archive';
+import { Badge, Skeleton } from '@mui/material'
+import useSWR from 'swr'
 
 
 // ヘッダーのルート
@@ -44,16 +45,35 @@ const Anchor = styled(Text)`
   }
 `
 
+const fetcher = (url: string) => {
+  const cookieData = getCookie();
+  return fetch(url, {
+    credentials: 'include',
+    headers: {
+      "Content-Type": "application/json",
+      "uid": cookieData?.uid || "",
+      "client": cookieData?.client || "",
+      "access-token": cookieData?.accessToken || "",
+    },
+  }).then((res) => res.json())
+};
+
+
 /**
  * ヘッダー
  */
 const Header = () => {
-  const { isLoading } = useAuthContext()
   const cookieData = getCookie();
   const userId = cookieData ? cookieData.userId : '';
   const groupId = cookieData ? cookieData.groupId : '';
   console.log("userId, groupId");
   console.log(userId, groupId);
+  const { data, error } = useSWR(
+    `http://localhost:3010/api/v1/stock_items/alarms`,
+    fetcher
+  );
+  if (error) return <div>An error has occurred.</div>;
+  if (!data) return <Skeleton>Loading...</Skeleton>;
 
   return (
     <HeaderRoot>
@@ -66,50 +86,58 @@ const Header = () => {
               </Anchor>
             </Link>
           </NavLink>
-          <NavLink>
-            <Link href="/grocery" passHref>
-              <Button as="a">食料品</Button>
-            </Link>
-          </NavLink>
-          <NavLink>
-            <Link href="/product" passHref>
-              <Button as="a">日用品</Button>
-            </Link>
-          </NavLink>
-          <NavLink>
-            <Box display={{ base: 'none', md: 'block' }}>
-              <Text>
-                カテゴリ
-              </Text>
-            </Box>
-          </NavLink>
+        {userId && groupId && (
+          <>
+            <NavLink>
+              <Link href="/grocery" passHref>
+                <Button as="a">食料品</Button>
+              </Link>
+            </NavLink>
+            <NavLink>
+              <Link href="/product" passHref>
+                <Button as="a">日用品</Button>
+              </Link>
+            </NavLink>
+            <NavLink>
+              <Box display={{ base: 'none', md: 'block' }}>
+                <Text>
+                  カテゴリ
+                </Text>
+              </Box>
+            </NavLink>
+          </>
+        )}
         </Nav>
         <Nav as="nav" height="56px" alignItems="center">
-          <NavLink>
-            <Box display={{ base: 'block', md: 'none' }}>
-              <Link href="/search" passHref>
+        {userId && groupId && (
+          <>
+            <NavLink>
+              <Box display={{ base: 'block', md: 'none' }}>
+                <Link href="/search" passHref>
+                  <Anchor as="a">
+                    <SearchIcon />
+                  </Anchor>
+                </Link>
+              </Box>
+            </NavLink>
+            <NavLink>
+              <Link href="/cart" passHref>
                 <Anchor as="a">
-                  <SearchIcon />
+                  <BadgeIconButton
+                    icon={<ShoppingCartIcon size={24} />}
+                    size="24px"
+                    
+                    badgeBackgroundColor="textColor"
+                  />
                 </Anchor>
               </Link>
-            </Box>
-          </NavLink>
-          <NavLink>
-            <Link href="/cart" passHref>
-              <Anchor as="a">
-                <BadgeIconButton
-                  icon={<ShoppingCartIcon size={24} />}
-                  size="24px"
-                  
-                  badgeBackgroundColor="textColor"
-                />
-              </Anchor>
-            </Link>
-          </NavLink>
+            </NavLink>
+          </>
+          )}
           <NavLink>
             {(() => {
               // 認証していたらアイコンを表示
-              if (userId) {
+              if (userId && groupId) {
                 return (
                   <>
                     <Link href={`/users/${userId}`} passHref>
@@ -122,11 +150,21 @@ const Header = () => {
                       <PersonIcon size={24} />
                       </Anchor>
                     </Link>
+                    <NavLink>
+                      <Link href="/stock_item" passHref>
+                      <Button as="a">ストック</Button>
+                      <Badge badgeContent={data.data.length} color="primary">
+                        <ArchiveIcon />
+                      </Badge>
+                      </Link>
+                    </NavLink>
+                    <NavLink>
+                      <Link href="/to_buy_list" passHref>
+                        <Button as="a">買い物リスト</Button>
+                      </Link>
+                    </NavLink>
                   </>
                 )
-              } else if (isLoading) {
-                // ロード中はスピナーを表示
-                return <Spinner size={20} strokeWidth={2} />
               } else {
                 // サインインしてない場合はアイコンを表示
                 return (
@@ -138,23 +176,13 @@ const Header = () => {
                     </Link>
                     <Link href="/signup" passHref>
                       <Anchor as="a">
-                        サインアップ
+                        新規登録
                       </Anchor>
                     </Link>
                   </>
                 )
               }
             })()}
-          </NavLink>
-          <NavLink>
-            <Link href="/stock_item" passHref>
-              <Button as="a">ストック</Button>
-            </Link>
-          </NavLink>
-          <NavLink>
-            <Link href="/to_buy_list" passHref>
-              <Button as="a">買い物リスト</Button>
-            </Link>
           </NavLink>
         </Nav>
       </Flex>

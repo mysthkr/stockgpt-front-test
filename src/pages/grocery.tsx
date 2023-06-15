@@ -280,6 +280,8 @@ const Grocery: NextPage = () => {
     console.log("送信されました");
     console.log(text);
     const cookieData = getCookie();
+    console.log("cookieData");
+    console.log(cookieData);
     const axiosInstance = axios.create({
       baseURL: `http://localhost:3010/api/v1/`,
     });
@@ -303,6 +305,7 @@ const Grocery: NextPage = () => {
           Cookies.set("client", response.headers["client"]);
           Cookies.set("access-token", response.headers["access-token"]);
           const data = response.data.json()
+          console.log("search_response");
           console.log(data);
         })
         .catch(function (error) {
@@ -410,7 +413,7 @@ const Grocery: NextPage = () => {
                 value="検索"
                 onClick={clickSubmit}
               />
-            </form>
+              </form>
             </Box>
             <div >
               {data.data.map((grocery: any) => (

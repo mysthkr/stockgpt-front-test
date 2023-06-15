@@ -49,7 +49,7 @@ const CustomDataGrid = styled(DataGrid)({
   // その他のカスタムスタイル
 });
 
-const StockItem: NextPage = () => {
+const StockItemCopy: NextPage = () => {
   const { data, error } = useSWR(
     "http://localhost:3010/api/v1/stock_items",
     fetcher
@@ -340,8 +340,21 @@ const StockItem: NextPage = () => {
           </Grid>
           <Toaster />
           <List data={sortedData} />
-            
-          </Box>
+            {/* <div >
+              {selectedRow && (
+                <div>
+                  <p>アイテム名：{selectedRow.item_name} </p>
+                  <p>アラーム日：{selectedRow.alarm_date}</p>
+                  <p>カテゴリー：{selectedRow.category_name }</p>
+                  <p>サブカテゴリー：{selectedRow.sub_category_name }</p>
+                  <p>Criteria: {selectedRow.criteria}</p>
+                  <p>Price: {selectedRow.price}</p>
+                  <p>Quantity: {selectedRow.quantity}</p>
+                  <p>{selectedRow.picture}</p>
+                </div>
+              )}
+            </div> */}
+            </Box>
             
         </Flex>
       </Flex>
@@ -349,4 +362,4 @@ const StockItem: NextPage = () => {
   );
 };
 
-export default StockItem;
+export default StockItemCopy;

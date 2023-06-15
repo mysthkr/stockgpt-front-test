@@ -1,19 +1,13 @@
 import Link from 'next/link'
 import styled from 'styled-components'
-import AppLogo from 'components/atoms/AppLogo'
 import Button from 'components/atoms/Button'
-import {
-  SearchIcon,
-  PersonIcon,
-  ShoppingCartIcon,
-} from 'components/atoms/IconButton'
 import ShapeImage from 'components/atoms/ShapeImage'
-import Spinner from 'components/atoms/Spinner'
 import Text from 'components/atoms/Text'
 import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import BadgeIconButton from 'components/molecules/BadgeIconButton'
-import { useAuthContext } from 'contexts/AuthContext'
+import { getCookie } from "lib/getCookie";
+import useSWR from 'swr'
 
 // ヘッダーのルート
 const GlobalNavRoot = styled.header`
@@ -43,69 +37,72 @@ const Anchor = styled(Text)`
 /**
  * ヘッダー
  */
-const Header = () => {
-  const { authUser, isLoading } = useAuthContext()
+const GlobalNav = () => {
+  const { data: cookieData, error } = useSWR('userCookie', getCookie);
+  const userId = cookieData ? cookieData.userId : '';
+  const groupId = cookieData ? cookieData.groupId : '';
+  /* if (error) return <div>Failed to load</div> */
 
   return (
     <GlobalNavRoot>
       <Flex paddingLeft={3} paddingRight={3} justifyContent="space-between">
         <Nav as="nav" height="56px" alignItems="center">
-          <NavLink>
-            <Box display={{ base: 'none', md: 'block' }}>
-              <Link href="/recipe" passHref>
-                <Anchor as="a">
-                  <Text>
-                    レシピ
-                  </Text>
-                </Anchor>
-              </Link>
-            </Box>
-          </NavLink>
-          <NavLink>
-            <Box display={{ base: 'none', md: 'block' }}>
-              <Link href="/favorite" passHref>
-                <Anchor as="a">
-                  <Text>
-                    お気に入り
-                  </Text>
-                </Anchor>
-              </Link>
-            </Box>
-          </NavLink>
-          <NavLink>
-            <Box display={{ base: 'none', md: 'block' }}>
-              <Link href="/criteria_day" passHref>
-                <Anchor as="a">
-                  <Text>
-                    カスタマイズ
-                  </Text>
-                </Anchor>
-              </Link>
-            </Box>
-          </NavLink>
+        {(() => {
+          // 認証していたらアイコンを表示
+          if (userId  && groupId) {
+                return (
+                  <>
+                    <NavLink>
+                      <Box display={{ base: 'none', md: 'block' }}>
+                        <Link href="/recipe" passHref>
+                          <Anchor as="a">
+                            <Text>
+                              レシピ
+                            </Text>
+                          </Anchor>
+                        </Link>
+                      </Box>
+                    </NavLink>
+                    <NavLink>
+                      <Box display={{ base: 'none', md: 'block' }}>
+                        <Link href="/favorite" passHref>
+                          <Anchor as="a">
+                            <Text>
+                              お気に入り
+                            </Text>
+                          </Anchor>
+                        </Link>
+                      </Box>
+                    </NavLink>
+                    <NavLink>
+                      <Box display={{ base: 'none', md: 'block' }}>
+                        <Link href="/criteria_day" passHref>
+                          <Anchor as="a">
+                            <Text>
+                              カスタマイズ
+                            </Text>
+                          </Anchor>
+                        </Link>
+                      </Box>
+                    </NavLink>
+                  </>
+                )}
+            })()}
         </Nav>
         <Nav as="nav" height="56px" alignItems="center">
           <NavLink>
             {(() => {
               // 認証していたらアイコンを表示
-              if (authUser) {
+              if (userId && groupId) {
                 return (
-                  <Link href={`/users/${authUser.id}`} passHref>
-                    <Anchor as="a">
-                      login
-                    </Anchor>
-                  </Link>
+                  <NavLink>
+                    <Link href="/sell" passHref>
+                      <Button as="a">ログアウト</Button>
+                    </Link>
+                  </NavLink>
                 )
-              } else if (isLoading) {
-                // ロード中はスピナーを表示
-                return <Spinner size={20} strokeWidth={2} />
               } 
             })()}
-          </NavLink>
-          <NavLink>
-            <Link href="/sell" passHref>
-              <Button as="a">ログアウト</Button>
-            </Link>
           </NavLink>
         </Nav>
       </Flex>
@@ -113,4 +110,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default GlobalNav

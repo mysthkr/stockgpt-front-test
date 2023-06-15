@@ -78,7 +78,7 @@ const Product: NextPage = () => {
       const fetchData = async () => {
         const data = await fetchFavoriteAllData();
         const favoriteItems: { [itemId: string]: boolean } = {};
-        data.data.forEach(item => {
+        data.data.forEach((item: { item_id: string | number; }) => {
           favoriteItems[item.item_id] = true;
         });
         setFavorites(favoriteItems);
@@ -191,6 +191,52 @@ const Product: NextPage = () => {
         </Button>
       </Paper>
     );
+  }
+
+  //検索機能
+  const changeText = (e: any) => {
+    setText(e.target.value);
+    // clickSubmit(e.target.value);
+  }
+
+  const clickSubmit = (e: any) => {
+    console.log("送信されました");
+    console.log(text);
+    const cookieData = getCookie();
+    console.log("cookieData");
+    console.log(cookieData);
+    const axiosInstance = axios.create({
+      baseURL: `http://localhost:3010/api/v1/`,
+    });
+    (async () => {
+      setIsError(false);
+      setErrorMessage("");
+      return await axiosInstance
+        .post("searches", {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
+            "product_flag": true,
+          },
+          data: text,
+        })
+        .then(function (response) {
+          // Cookieにトークンをセットしています
+          Cookies.set("uid", response.headers["uid"]);
+          Cookies.set("client", response.headers["client"]);
+          Cookies.set("access-token", response.headers["access-token"]);
+          const data = response.data.json()
+          console.log(data);
+        })
+        .catch(function (error) {
+          // Cookieからトークンを削除しています
+          setIsError(true);
+          setErrorMessage(error.response.data.errors[0]);
+        });
+    })();
   }
 
   function TabPanel(props: { [x: string]: any; children: any; value: any; index: any; }) {
@@ -313,6 +359,22 @@ const Product: NextPage = () => {
 
             <Box width="100%">
               <Text>検索</Text>
+              
+              <form method="POST">
+              {/* テキスト入力フォーム */}
+              <input 
+                className="border border-black" 
+                type="text" 
+                value={text}
+                onChange={changeText}
+              />
+              {/* 追加ボタン */}
+              <input
+                type="submit"
+                value="検索"
+                onClick={clickSubmit}
+              />
+            </form>
             </Box>
 
             <div >

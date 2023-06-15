@@ -64,7 +64,7 @@ const Profile = (props: any, id: number) => {
             <p>Name: {props.data[0].name}</p>
             <p>Nickname: {props.data[0].nickname}</p>
             <Link href={`http://localhost:3000/profile/${userId}/edit`}>編集</Link>
-            <Link href={`http://localhost:3000/profile/${id}`}>削除</Link>
+            <Link href={`http://localhost:3000/user/${id}`}>ユーザー削除</Link>
           </li>
           </Box>
         </Flex>

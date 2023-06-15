@@ -4,14 +4,15 @@ import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, Promis
 import useSWR from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Alert, IconButton, Paper, Skeleton, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Alert, IconButton, Paper, Skeleton, Tab, Tabs, TextField, Typography, 
+        Grid, Card, CardContent, CardMedia, Button, Box, styled} from '@mui/material';
 import { TabPanel } from "@mui/lab";
 import { ItemDialog } from "components/organisms/ItemDialog";
-import Box from 'components/layout/Box'
+// import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
 import Text from 'components/atoms/Text'
-import Button from 'components/atoms/Button'
+// import Button from 'components/atoms/Button'
 import axios from "axios";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie"
@@ -19,6 +20,11 @@ import { getCookie } from "lib/getCookie";
 import { GrFavorite } from "react-icons/gr";
 import { MdFavorite } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
+import { FaIndustry, FaShoppingCart } from "react-icons/fa"; 
+import { BiCategory } from "react-icons/bi"; 
+import { ShoppingCartIcon } from "components/atoms/IconButton";
+import { Search } from "@mui/icons-material";
+
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
@@ -32,6 +38,16 @@ const fetcher = (url: string) => {
     },
   }).then((res) => res.json())
 };
+
+// カスタムアイコンの色を定義するスタイル
+const CustomGrFavorite = styled(GrFavorite)({
+  color: 'pink', 
+});
+
+const CustomMdFavorite = styled(MdFavorite)({
+  color: '#ff7f50', 
+});
+
 
 const Product: NextPage = () => {
   const router = useRouter();
@@ -197,15 +213,26 @@ const Product: NextPage = () => {
     };
   
     return (
-      <Paper component="form">
+      <Paper component="form" sx={{ padding: "1rem", marginBottom: "1rem" }}>
         <TextField
           id="criteria"
           label="消費目安(日後)"
           name="criteria"
           value={criteriaInput}
-          onChange={e => setCriteria(e.target.value)}
+          onChange={(e) => {
+            const input = e.target.value;
+            if (/^[0-9]*$/.test(input)) { 
+              if (input.length <= 5) {
+                setCriteria(e.target.value);
+              } else {
+                toast.error('消費目安は5桁まで入力できます。');
+              }
+            } else {
+              toast.error("数字は半角で入力してください。");
+            }
+          }}
           autoComplete="criteria"
-          // autoFocus
+          helperText="※オプション（5桁まで）"
         />
         <TextField
           name="price"
@@ -213,8 +240,20 @@ const Product: NextPage = () => {
           type="price"
           id="price"
           value={priceInput}
-          onChange={e => setPrice(e.target.value)}
+          onChange={(e) => {
+            const input = e.target.value;
+            if (/^[0-9]*$/.test(input)) { 
+              if (input.length <= 11) {
+                setPrice(e.target.value)
+              }else {
+                toast.error('消費目安は11桁まで入力できます。');
+              }
+            } else {
+              toast.error("数字は半角で入力してください。");
+            }
+          }}
           autoComplete="price"
+          helperText="※オプション（11桁まで）"
         />
         {isError ? (
           <Alert
@@ -227,7 +266,16 @@ const Product: NextPage = () => {
             {errorMessage}
           </Alert>
         ) : null}
-        <Button color="black" onClick={addClick} disabled={isLoading}>
+        <Button onClick={addClick} disabled={isLoading}
+        sx={{
+          color: '#ff7f50',
+          '&:hover': {
+            backgroundColor: '#fff7f1',
+          },
+          display: 'flex',
+          alignItems: 'center',
+        }}>
+          <ShoppingCartIcon />
           {isLoading ? 'Loading...' : 'カートに追加'}
         </Button>
       </Paper>
@@ -236,7 +284,6 @@ const Product: NextPage = () => {
 
   interface AddListButtonProps {
     className: string;
-    // item: {criteria: number, price: number, item_id: number}
     item_id: number;
   }
   const AddListButton: React.FC<AddListButtonProps> = ({ className , item_id}) => {
@@ -278,8 +325,7 @@ const Product: NextPage = () => {
     };
   
     return (
-      <Paper component="form">
-        
+      <Paper component="form" sx={{ padding: "1rem", marginBottom: "1rem" }}>
         {isError ? (
           <Alert
             onClose={() => {
@@ -291,7 +337,12 @@ const Product: NextPage = () => {
             {errorMessage}
           </Alert>
         ) : null}
-        <Button color="black" onClick={addClick} disabled={isLoading}>
+        <Button onClick={addClick} disabled={isLoading}sx={{
+          color: '#ff7f50',
+          '&:hover': {
+            backgroundColor: '#fff7f1',
+          },
+        }}>
           {isLoading ? 'Loading...' : '買い物リストに追加'}
         </Button>
       </Paper>
@@ -305,11 +356,7 @@ const Product: NextPage = () => {
 
   const clickSubmit = async (e: any) => {
     e.preventDefault(); 
-    console.log("送信されました");
-    console.log(text);
     const cookieData = getCookie();
-    console.log("cookieData");
-    console.log(cookieData);
     const axiosInstance = axios.create({
       baseURL: `http://localhost:3010/api/v1/`,
     });
@@ -326,8 +373,6 @@ const Product: NextPage = () => {
           },
           data: text,
         });
-        console.log("search_response");
-        console.log(response.data);
         setItemData(response.data);
       } catch (error: any) {
         setIsError(true);
@@ -341,7 +386,6 @@ const Product: NextPage = () => {
 
   function TabPanel(props: { [x: string]: any; children: any; value: any; index: any; }) {
     const { children, value, index, ...other } = props;
-  
     return (
       <div
         role="tabpanel"
@@ -429,7 +473,7 @@ const Product: NextPage = () => {
   };
 
   
-  
+  const itemDataExists = itemData.length > 0;
 
   return (
     <Layout {...data}>
@@ -448,64 +492,124 @@ const Product: NextPage = () => {
                 <Tab label="日用品"  value={1} />
               </Tabs>
             </Box>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={value} index={0} sx={{ marginY: 'auto', marginX: 'auto' }}>
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            <TabPanel value={value} index={1} sx={{ marginY: 'auto', marginX: 'auto' }}>
             </TabPanel>
-            <Box width="100%">
-              <Text>検索</Text>
-              <form method="POST" onSubmit={clickSubmit}>
-              {/* テキスト入力フォーム */}
-              <input 
-                className="border border-black" 
-                type="text" 
+            <Box width="300px" marginX="auto"  mb={4} mt={2}>
+            <form method="POST" onSubmit={clickSubmit} style={{ display: 'flex', alignItems: 'center' }}>
+              <TextField
+                variant="outlined"
                 value={text}
                 onChange={changeText}
+                label="検索"
+                size="small"
+                sx={{ marginRight: '8px', flex: 1 }}
               />
-              {/* 検索ボタン */}
-              <input
+              <Button
                 type="submit"
-                value="検索"
-              />
+                variant="contained"
+                startIcon={<Search />}
+                sx={{
+                  backgroundColor: '#ff7f50',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: '#ff7f50',
+                    transform: 'translateY(5px)',
+                    boxShadow: 'none',
+                  },
+                  transition: 'all 0.3s',
+                }}
+              >
+                検索
+              </Button>
             </form>
-            </Box>
-            <div >
+          </Box>
+            {itemDataExists && (
+            <Grid container spacing={2}>
               {itemData.map((product: any) => (
-                <li className='p-4' key={product.id}>
-                  <p>ID: {product.id}</p>
-                  <p>Picture: {product.picture}</p>
-                  <p>Created at: {product.created_at}</p>
-                  <p>Updated at: {product.updated_at}</p>
-                  <p>Category Product ID: {product.category_product_id}</p>
-                  <p>Category Product Name: {product.category_product_name}</p>
-                  <p>Sub Category Product ID: {product.sub_category_product_id}</p>
-                  <p>Sub Category Product Name: {product.sub_category_product_name}</p>
-                  <p>Item ID: {product.item_id}</p>
-                  <p>Item Name: {product.item_name}</p>
-                  <p>Maker ID: {product.maker_id}</p>
-                  <p>Maker Name: {product.maker_name}</p>
-                  <img src={`/images/${product.picture}.png`} alt="item" />
-                  <Link href={`http://localhost:3000/product/${product.id}`}>詳細</Link>
-                  <AddCartButton item_id={product.item_id} 
-                    className="text-white bg-indigo-500 border-0 py-2 px-8 
-                    focus:outline-none hover:bg-indigo-600 rounded text-lg"
-                  />
-                  <AddListButton item_id={product.item_id}
-                  className="text-white bg-indigo-500 border-0 py-2 px-8 
-                  focus:outline-none hover:bg-indigo-600 rounded text-lg" />
-                
+                <Grid item xs={12} sm={6} md={4} key={product.id}>
+                <Card  sx={{
+                  maxWidth: 500,
+                  boxShadow: '2px 5px 10px -5px #9e9e9e',
+                  borderRadius: 10,
+                  }}>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={`/images/${product.picture}.png`}
+                  alt={product.item_name}
+                  sx={{ objectFit: "cover" }}
+                />
+                <CardContent>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2" color="text.secondary" gutterBottom pl={2} pr={3}>
+                      <FaIndustry style={{ marginRight: "0.25em" }} />
+                      Item ID:{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {product.item_id}
+                    </span>
+                  </Typography>
                   {favorites[product.item_id] ? (
                     <IconButton onClick={() => handleRemoveFavorite(product.item_id)}>
-                      <MdFavorite />
+                      <CustomMdFavorite />
                     </IconButton>
                   ) : (
                     <IconButton onClick={() => handleAddFavorite(product.item_id)}>
-                      <GrFavorite />
+                      <CustomGrFavorite />
                     </IconButton>
                   )}
-                </li>
+                </Box>
+                  <Typography variant="body2" color="text.secondary" gutterBottom pl={2}>
+                      <FaShoppingCart style={{ marginRight: "0.25em" }} />
+                      商品名:{" "}
+                    <span style={{ fontWeight: "bold", maxWidth: '80%', 
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'  }}>
+                      {product.item_name}
+                    </span>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom pl={2}>
+                      <BiCategory style={{ marginRight: "0.25em" }} />
+                      カテゴリー:{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {product.category_product_name}
+                    </span>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom pl={2}>
+                      <BiCategory style={{ marginRight: "0.25em" }} />
+                      サブカテゴリー:{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {product.sub_category_product_name}
+                    </span>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom pl={2}>
+                      <FaIndustry style={{ marginRight: "0.25em" }} />
+                      メーカー名:{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                      {product.maker_name}
+                      </span>
+                  </Typography>
+                  <Box display="flex" justifyContent="space-between" marginTop={2} >
+                    <AddCartButton item_id={product.item_id}
+                      className="text-white bg-indigo-500 border-0 py-2 px-8 
+                      focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" marginTop={2}>
+                    <AddListButton item_id={product.item_id}
+                      className="text-white bg-indigo-500 border-0 py-2 px-8 
+                      focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
               ))}
-            </div>
+            </Grid>
+            )}
+            {!itemDataExists && (
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                該当する商品が見つかりませんでした。
+              </Typography>
+            )}
           </Box>
         </Flex>
       </Flex>

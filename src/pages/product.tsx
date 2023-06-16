@@ -597,7 +597,8 @@ const Product: NextPage = () => {
                   <Box display="flex" justifyContent="space-between" marginTop={2} >
                     <AddCartButton item_id={product.item_id}
                       className="text-white bg-indigo-500 border-0 py-2 px-8 
-                      focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                      focus:outline-none hover:bg-indigo-600 rounded text-lg" 
+                      />
                   </Box>
                   <Box display="flex" justifyContent="space-between" marginTop={2}>
                     <AddListButton item_id={product.item_id}

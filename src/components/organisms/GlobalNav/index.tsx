@@ -7,17 +7,27 @@ import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import BadgeIconButton from 'components/molecules/BadgeIconButton'
 import { getCookie } from "lib/getCookie";
-import useSWR from 'swr'
+import useSWR from 'swr';
+import Typography from '@mui/material/Typography';
+
+
+const CustomTypography = styled(Typography)({
+  color: '#FFFFFF',
+  // fontFamily: 'Noto Sans JP, M PLUS Rounded 1c, sans-serif',
+  fontFamily: '"M PLUS Rounded 1c", sans-serif',
+});
 
 // ヘッダーのルート
 const GlobalNavRoot = styled.header`
-  height: 50px;
-  background-color: #ff7f50
+  height: 55px;
+  background-color: #ff7f50;
+  padding: 0px 10px;
 `
 
 // ナビゲーション
 const Nav = styled(Flex)`
   & > span:not(:first-child) {
+    margin-left: 10px;
   }
 `
 
@@ -29,10 +39,15 @@ const NavLink = styled.span`
 // アンカー
 const Anchor = styled(Text)`
   cursor: pointer;
+  color: #ffffff; 
   &:hover {
     text-decoration: underline;
   }
 `
+
+const StyledButton = styled(Button)`
+  color: #ffffff; 
+`;
 
 /**
  * ヘッダー
@@ -45,7 +60,7 @@ const GlobalNav = () => {
 
   return (
     <GlobalNavRoot>
-      <Flex paddingLeft={3} paddingRight={3} justifyContent="space-between">
+      <Flex paddingLeft={3} paddingRight={3} justifyContent="space-between" alignItems="center">
         <Nav as="nav" height="56px" alignItems="center">
         {(() => {
           // 認証していたらアイコンを表示
@@ -56,9 +71,9 @@ const GlobalNav = () => {
                       <Box display={{ base: 'none', md: 'block' }}>
                         <Link href="/recipe" passHref>
                           <Anchor as="a">
-                            <Text>
+                            <CustomTypography variant="body1">
                               レシピ
-                            </Text>
+                            </CustomTypography>
                           </Anchor>
                         </Link>
                       </Box>
@@ -67,9 +82,9 @@ const GlobalNav = () => {
                       <Box display={{ base: 'none', md: 'block' }}>
                         <Link href="/favorite" passHref>
                           <Anchor as="a">
-                            <Text>
+                            <CustomTypography variant="body1">
                               お気に入り
-                            </Text>
+                            </CustomTypography>
                           </Anchor>
                         </Link>
                       </Box>
@@ -78,9 +93,9 @@ const GlobalNav = () => {
                       <Box display={{ base: 'none', md: 'block' }}>
                         <Link href="/criteria_day" passHref>
                           <Anchor as="a">
-                            <Text>
+                            <CustomTypography variant="body1">
                               カスタマイズ
-                            </Text>
+                            </CustomTypography>
                           </Anchor>
                         </Link>
                       </Box>
@@ -89,7 +104,7 @@ const GlobalNav = () => {
                 )}
             })()}
         </Nav>
-        <Nav as="nav" height="56px" alignItems="center">
+        <Nav as="nav" alignItems="center">
           <NavLink>
             {(() => {
               // 認証していたらアイコンを表示
@@ -97,7 +112,7 @@ const GlobalNav = () => {
                 return (
                   <NavLink>
                     <Link href="/sell" passHref>
-                      <Button as="a">ログアウト</Button>
+                      <StyledButton as="a">ログアウト</StyledButton>
                     </Link>
                   </NavLink>
                 )

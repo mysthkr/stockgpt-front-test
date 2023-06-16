@@ -51,6 +51,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         {/* <meta property="fb:app_id" content="556485011968079" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@truck2hand" /> */}
+        <link rel="stylesheet" href="/fonts.css" />
       </Head>
       <GlobalStyle />
       <Component {...pageProps} />

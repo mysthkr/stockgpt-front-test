@@ -1,12 +1,7 @@
 import Link from 'next/link'
 import styled from 'styled-components'
-import AppLogo from 'components/atoms/AppLogo'
-import Button from 'components/atoms/Button'
-import {
-  SearchIcon,
-  PersonIcon,
-  ShoppingCartIcon,
-} from 'components/atoms/IconButton'
+import AppLogo from 'components/atoms/AppLogo';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import ShapeImage from 'components/atoms/ShapeImage'
 import Spinner from 'components/atoms/Spinner'
 import Text from 'components/atoms/Text'
@@ -16,8 +11,10 @@ import BadgeIconButton from 'components/molecules/BadgeIconButton'
 import { withAuthServerSideProps } from "lib/auth";
 import { getCookie } from "lib/getCookie";
 import ArchiveIcon from '@mui/icons-material/Archive';
-import { Badge, Skeleton } from '@mui/material'
-import useSWR from 'swr'
+import { Badge, Skeleton } from '@mui/material';
+import useSWR from 'swr';
+import { Inventory, Person, ShoppingCart } from '@mui/icons-material';
+
 
 
 // ヘッダーのルート
@@ -29,19 +26,49 @@ const HeaderRoot = styled.header`
 // ナビゲーション
 const Nav = styled(Flex)`
   & > span:not(:first-child) {
+    margin-left: 15px;
   }
 `
 
 // ナビゲーションのリンク
 const NavLink = styled.span`
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: #4B4B4B;
+  transform: scale(1);
+  transition: all 0.3s;
+  &:hover {
+    transform: translateY(5px);
+  }
+`
+
+const NavLinkContent = styled.span`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 `
 
 // アンカー
 const Anchor = styled(Text)`
   cursor: pointer;
+  color: #4B4B4B;
+  margin-left: 8px;
   &:hover {
     text-decoration: underline;
+  }
+`
+const Button = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4B4B4B;
+  margin-left: 8px;
+  transition: all 0.3s;
+  &:hover {
+    transform: translateY(5px);
   }
 `
 
@@ -80,113 +107,114 @@ const Header = () => {
       <Flex paddingLeft={3} paddingRight={3} justifyContent="space-between">
         <Nav as="nav" height="56px" alignItems="center">
           <NavLink>
-            <Link href="/" passHref>
-              <Anchor as="a">
-                <AppLogo />
-              </Anchor>
-            </Link>
+            <NavLinkContent>
+              <Link href="/" passHref>
+                <Anchor as="a">
+                  <AppLogo />
+                </Anchor>
+              </Link>
+            </NavLinkContent>
           </NavLink>
         {userId && groupId && (
           <>
             <NavLink>
+            <NavLinkContent>
               <Link href="/grocery" passHref>
                 <Button as="a">食料品</Button>
               </Link>
+              </NavLinkContent>
             </NavLink>
             <NavLink>
+            <NavLinkContent>
               <Link href="/product" passHref>
                 <Button as="a">日用品</Button>
               </Link>
+              </NavLinkContent>
             </NavLink>
             <NavLink>
+            <NavLinkContent>
               <Box display={{ base: 'none', md: 'block' }}>
                 <Text>
                   カテゴリ
                 </Text>
               </Box>
+              </NavLinkContent>
             </NavLink>
           </>
         )}
         </Nav>
+        
         <Nav as="nav" height="56px" alignItems="center">
-        {userId && groupId && (
+        {(() => {
+        // 認証していたらアイコンを表示
+        if (userId && groupId) {
+          return (
           <>
             <NavLink>
-              <Box display={{ base: 'block', md: 'none' }}>
-                <Link href="/search" passHref>
+              <NavLinkContent>
+                <Link href="/cart" passHref>
                   <Anchor as="a">
-                    <SearchIcon />
+                    <BadgeIconButton
+                      icon={<ShoppingCart style={{ color: '#4B4B4B', fontSize: 24 }} />}
+                      size="24px"
+                      badgeBackgroundColor="textColor"
+                    />
                   </Anchor>
                 </Link>
-              </Box>
+              </NavLinkContent>
+            </NavLink>
+                  
+            <NavLink>
+              <NavLinkContent>
+                <Link href={`/profile/${userId}`}  passHref>
+                <Anchor as="a">
+                  <Person style={{ color: '#4B4B4B', fontSize: 24 }} />
+                  </Anchor>
+                </Link>
+              </NavLinkContent>
+            </NavLink>
+
+            <NavLink>
+              <NavLinkContent>
+                <Link href="/stock_item" passHref>
+                  <Badge badgeContent={data.data.length} style={{ color: '#ff7f50', fontSize: 24 }}>
+                    <Inventory style={{ color: '#4B4B4B', fontSize: 24 }}/>
+                  </Badge>
+                </Link>
+              </NavLinkContent>
             </NavLink>
             <NavLink>
-              <Link href="/cart" passHref>
-                <Anchor as="a">
-                  <BadgeIconButton
-                    icon={<ShoppingCartIcon size={24} />}
-                    size="24px"
-                    
-                    badgeBackgroundColor="textColor"
-                  />
-                </Anchor>
-              </Link>
+              <NavLinkContent>
+                <Link href="/to_buy_list" passHref>
+                  <Button as="a">
+                    <EditNoteIcon style={{ color: '#4B4B4B', fontSize: 24 }} />
+                  </Button>
+                </Link>
+              </NavLinkContent>
             </NavLink>
           </>
-          )}
-          <NavLink>
-            {(() => {
-              // 認証していたらアイコンを表示
-              if (userId && groupId) {
-                return (
-                  <>
-                    <Link href={`/users/${userId}`} passHref>
-                      <Anchor as="a">
-                        
-                      </Anchor>
-                    </Link>
-                    <Link href={`/profile/${userId}`}  passHref>
-                    <Anchor as="a">
-                      <PersonIcon size={24} />
-                      </Anchor>
-                    </Link>
-                    <NavLink>
-                      <Link href="/stock_item" passHref>
-                      <Button as="a">ストック</Button>
-                      <Badge badgeContent={data.data.length} color="primary">
-                        <ArchiveIcon />
-                      </Badge>
-                      </Link>
-                    </NavLink>
-                    <NavLink>
-                      <Link href="/to_buy_list" passHref>
-                        <Button as="a">買い物リスト</Button>
-                      </Link>
-                    </NavLink>
-                  </>
-                )
-              } else {
+          )
+        } else {
                 // サインインしてない場合はアイコンを表示
-                return (
-                  <>
-                    <Link href="/login" passHref>
-                      <Anchor as="a">
-                        ログイン
-                      </Anchor>
-                    </Link>
-                    <Link href="/signup" passHref>
-                      <Anchor as="a">
-                        新規登録
-                      </Anchor>
-                    </Link>
-                  </>
-                )
-              }
-            })()}
-          </NavLink>
-        </Nav>
-      </Flex>
-    </HeaderRoot>
+          return (
+            <>
+              <Link href="/login" passHref>
+                <Anchor as="a">
+                  ログイン
+                </Anchor>
+              </Link>
+              <Link href="/signup" passHref>
+                <Anchor as="a">
+                  新規登録
+                </Anchor>
+              </Link>
+            </>
+          )
+        }
+        })()}
+      </Nav>
+    </Flex>
+  </HeaderRoot>
   )
 }
 

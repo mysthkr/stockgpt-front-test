@@ -6,6 +6,7 @@ import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
 import { Alert, IconButton, Paper, Skeleton, Tab, Tabs, TextField, Typography, 
         Grid, Card, CardContent, CardMedia, Button, Box, styled} from '@mui/material';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import { TabPanel } from "@mui/lab";
 import { ItemDialog } from "components/organisms/ItemDialog";
 // import Box from 'components/layout/Box'
@@ -337,12 +338,16 @@ const Product: NextPage = () => {
             {errorMessage}
           </Alert>
         ) : null}
-        <Button onClick={addClick} disabled={isLoading}sx={{
-          color: '#ff7f50',
-          '&:hover': {
+        <Button onClick={addClick} disabled={isLoading}
+          sx={{
+            color: '#ff7f50',
+            '&:hover': {
             backgroundColor: '#fff7f1',
           },
+          display: 'flex',
+          alignItems: 'center',
         }}>
+          <EditNoteIcon /> 
           {isLoading ? 'Loading...' : '買い物リストに追加'}
         </Button>
       </Paper>
@@ -526,7 +531,7 @@ const Product: NextPage = () => {
             </form>
           </Box>
             {itemDataExists && (
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ backgroundColor: '#f4f4f4' }}>
               {itemData.map((product: any) => (
                 <Grid item xs={12} sm={6} md={4} key={product.id}>
                 <Card  sx={{
@@ -537,7 +542,7 @@ const Product: NextPage = () => {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={`/images/${product.picture}.png`}
+                  image={`/images/${product.picture}`}
                   alt={product.item_name}
                   sx={{ objectFit: "cover" }}
                 />
@@ -592,7 +597,8 @@ const Product: NextPage = () => {
                   <Box display="flex" justifyContent="space-between" marginTop={2} >
                     <AddCartButton item_id={product.item_id}
                       className="text-white bg-indigo-500 border-0 py-2 px-8 
-                      focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                      focus:outline-none hover:bg-indigo-600 rounded text-lg" 
+                      />
                   </Box>
                   <Box display="flex" justifyContent="space-between" marginTop={2}>
                     <AddListButton item_id={product.item_id}

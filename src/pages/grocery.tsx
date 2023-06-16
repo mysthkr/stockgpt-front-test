@@ -6,6 +6,7 @@ import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
 import { Alert, Skeleton, Tab, Tabs, TextField, Typography,Paper, IconButton, Grid, 
   CardMedia, CardContent, Card, Box, styled, Button } from '@mui/material';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import { TabPanel } from "@mui/lab";
 import { ItemDialog } from "components/organisms/ItemDialog";
 // import Box from 'components/layout/Box'
@@ -348,12 +349,16 @@ const Grocery: NextPage = () => {
             {errorMessage}
           </Alert>
         ) : null}
-        <Button onClick={addClick} disabled={isLoading}sx={{
-          color: '#ff7f50',
-          '&:hover': {
+        <Button onClick={addClick} disabled={isLoading}
+          sx={{
+            color: '#ff7f50',
+            '&:hover': {
             backgroundColor: '#fff7f1',
           },
+          display: 'flex',
+          alignItems: 'center',
         }}>
+        <EditNoteIcon /> 
           {isLoading ? 'Loading...' : '買い物リストに追加'}
         </Button>
       </Paper>
@@ -537,7 +542,7 @@ const Grocery: NextPage = () => {
             </form>
             </Box>
             {itemDataExists && (
-              <Grid container spacing={2}>
+              <Grid container spacing={2} sx={{ backgroundColor: '#f4f4f4' }}>
               {itemData.map((grocery: any) => (
                 <Grid item xs={12} sm={6} md={4} key={grocery.id}>
                 <Card  sx={{

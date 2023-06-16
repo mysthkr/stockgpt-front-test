@@ -1,12 +1,7 @@
 import Link from 'next/link'
 import styled from 'styled-components'
-import AppLogo from 'components/atoms/AppLogo'
-import Button from 'components/atoms/Button'
-import {
-  SearchIcon,
-  PersonIcon,
-  ShoppingCartIcon,
-} from 'components/atoms/IconButton'
+import AppLogo from 'components/atoms/AppLogo';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import ShapeImage from 'components/atoms/ShapeImage'
 import Spinner from 'components/atoms/Spinner'
 import Text from 'components/atoms/Text'
@@ -16,8 +11,9 @@ import BadgeIconButton from 'components/molecules/BadgeIconButton'
 import { withAuthServerSideProps } from "lib/auth";
 import { getCookie } from "lib/getCookie";
 import ArchiveIcon from '@mui/icons-material/Archive';
-import { Badge, Skeleton } from '@mui/material'
-import useSWR from 'swr'
+import { Badge, Skeleton } from '@mui/material';
+import useSWR from 'swr';
+import { Search, Person, ShoppingCart } from '@mui/icons-material';
 
 
 // ヘッダーのルート
@@ -29,19 +25,41 @@ const HeaderRoot = styled.header`
 // ナビゲーション
 const Nav = styled(Flex)`
   & > span:not(:first-child) {
+    margin-left: 15px;
   }
 `
 
 // ナビゲーションのリンク
 const NavLink = styled.span`
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: #4B4B4B;
+  transform: scale(1);
+  transition: all 0.3s;
+  &:hover {
+    transform: translateY(5px);
+  }
 `
 
 // アンカー
 const Anchor = styled(Text)`
   cursor: pointer;
+  color: #4B4B4B;
+  margin-left: 8px;
   &:hover {
     text-decoration: underline;
+  }
+`
+const Button = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4B4B4B;
+  margin-left: 8px;
+  transition: all 0.3s;
+  &:hover {
+    transform: translateY(5px);
   }
 `
 
@@ -115,7 +133,7 @@ const Header = () => {
               <Box display={{ base: 'block', md: 'none' }}>
                 <Link href="/search" passHref>
                   <Anchor as="a">
-                    <SearchIcon />
+                    <Search style={{ color: '#4B4B4B', fontSize: 24 }}/>
                   </Anchor>
                 </Link>
               </Box>
@@ -124,7 +142,7 @@ const Header = () => {
               <Link href="/cart" passHref>
                 <Anchor as="a">
                   <BadgeIconButton
-                    icon={<ShoppingCartIcon size={24} />}
+                    icon={<ShoppingCart style={{ color: '#4B4B4B', fontSize: 24 }} />}
                     size="24px"
                     
                     badgeBackgroundColor="textColor"
@@ -147,20 +165,21 @@ const Header = () => {
                     </Link>
                     <Link href={`/profile/${userId}`}  passHref>
                     <Anchor as="a">
-                      <PersonIcon size={24} />
+                      <Person style={{ color: '#4B4B4B', fontSize: 24 }} />
                       </Anchor>
                     </Link>
                     <NavLink>
                       <Link href="/stock_item" passHref>
-                      <Button as="a">ストック</Button>
-                      <Badge badgeContent={data.data.length} color="primary">
-                        <ArchiveIcon />
+                      <Badge badgeContent={data.data.length} style={{ color: '#ff7f50', fontSize: 24 }}>
+                        <ArchiveIcon style={{ color: '#4B4B4B', fontSize: 24 }}/>
                       </Badge>
                       </Link>
                     </NavLink>
                     <NavLink>
                       <Link href="/to_buy_list" passHref>
-                        <Button as="a">買い物リスト</Button>
+                        <Button as="a">
+                          <EditNoteIcon style={{ color: '#4B4B4B', fontSize: 24 }} />
+                        </Button>
                       </Link>
                     </NavLink>
                   </>

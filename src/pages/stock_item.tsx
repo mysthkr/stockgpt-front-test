@@ -16,7 +16,6 @@ import Text from 'components/atoms/Text'
 // import Button from 'components/atoms/Button'
 import { DataGrid, GridActionsCellItem, GridCellParams, GridColDef, GridRowParams, GridRowsProp, GridToolbar,jaJP  } from '@mui/x-data-grid'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
 import { SvgIcon } from '@mui/material'
 import DescriptionIcon from '@mui/icons-material/Description';
 import React from "react";
@@ -155,6 +154,7 @@ const StockItem: NextPage = () => {
       },
       []
     );
+    
   
     // 表示するアクションを返す関数です
     const getDetailAction = React.useCallback(
@@ -280,9 +280,15 @@ const StockItem: NextPage = () => {
             }}
             getRowClassName={(params: GridRowParams) => {
               const alarmDate = new Date(params.row.alarm_date);
+              alarmDate.setHours(0, 0, 0, 0);  // 時間を0に設定
               // 今日の日付を取得（時間部分を無視するため、年、月、日だけを指定）
               const today = new Date();
               today.setHours(0, 0, 0, 0);  // 時間を0に設定
+
+              // console.log("alarmDate, today")
+              // console.log(alarmDate);
+              // console.log(today);
+              // console.log(alarmDate <= today);
             
               // 日付を比較
               if (alarmDate <= today) {
@@ -319,29 +325,34 @@ const StockItem: NextPage = () => {
 
   return (
     <Layout {...data}>
-      <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
+      <Flex padding="20px" justifyContent="center">
         <Flex
           width={{ base: '100%', md: '1040px' }}
           justifyContent="space-between"
           alignItems="center"
           flexDirection={{ base: 'column', md: 'row' }}
         >
-          <Box width="100%">
-          <Grid component="label" container alignItems="center" spacing={1}>
-            <Grid item>登録順</Grid>
-            <Grid item>
-              <IOSSwitch
-                checked={isSorted}
-                onChange={handleSortChange}
-                inputProps={{ 'aria-label': 'Sort items' }}
-              />
-            </Grid>
-            <Grid item>アラーム日順</Grid>
-          </Grid>
+          <Box width="100%"  marginBottom={{ base: '2', md: '0' }}>
+            <Flex justifyContent="flex-end">
+              <Box padding="10px">
+                <Grid component="label" container alignItems="center" spacing={1}>
+                  <Grid item>登録順</Grid>
+                    <Grid item>
+                      <IOSSwitch
+                        checked={isSorted}
+                        onChange={handleSortChange}
+                        inputProps={{ 'aria-label': 'Sort items' }}
+                      />
+                    </Grid>
+                  <Grid item>アラーム日順</Grid>
+                </Grid>
+              </Box>
+            </Flex>
+          <Box marginBottom="5" />
           <Toaster />
           <List data={sortedData} />
             
-          </Box>
+          </Box >
             
         </Flex>
       </Flex>

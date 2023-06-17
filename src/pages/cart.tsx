@@ -4,17 +4,21 @@ import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, Promis
 import useSWR, { useSWRConfig } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Button, Alert, Skeleton, Tab, Tabs, TextField, Typography,Paper } from '@mui/material';
+import { Button, Alert, Skeleton, Tab, Tabs, TextField, Typography,Paper, 
+  Grid, CardMedia, CardContent,Box, Card, Checkbox, FormControlLabel } from '@mui/material';
 import { getCookie } from "lib/getCookie";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
-import Box from 'components/layout/Box'
+// import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
 import Text from 'components/atoms/Text'
 // import Button from 'components/atoms/Button'
 import { parseISO, format, addDays } from 'date-fns'
 import ja from 'date-fns/locale/ja'
+import { Inventory, Person, ShoppingCart,CheckCircle } from '@mui/icons-material';
+import { FaIndustry, FaShoppingCart } from "react-icons/fa";
+import { BiCategory } from "react-icons/bi";
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
@@ -71,9 +75,8 @@ const Cart: NextPage = () => {
 
   const displayItemData = (itemId: number) => {
     // const allData: AllData = { data: [] };
-    const itemData = allData.data.find(data => data.item_id === itemId);
+    const itemData = allData.data.find((data: any) => data.item_id === itemId);
     if (itemData) {
-      console.log(itemData);
       return itemData.criteria;
     } else {
       return null;
@@ -119,14 +122,19 @@ const Cart: NextPage = () => {
     className: string;
     item_id: number;
     cart_id: number;
+    cart_criteria: number;
+    cart_price: number;
   }
 
-  const AddStockButton: React.FC<AddStockButtonProps> = ({ className , item_id, cart_id}) => {
+  const AddStockButton: React.FC<AddStockButtonProps> = ({ className , item_id, cart_id, cart_criteria, cart_price}) => {
     const [isLoading, setIsLoading] = useState(false);
+    console.log("cart_criteria");
+    console.log(cart_criteria);
     const [criteriaInput, setCriteria] = useState(displayItemData(item_id) ? 
-    displayItemData(item_id) : '');
+    cart_criteria || displayItemData(item_id) : '');
     const [priceInput, setPrice] = useState('');
     const [quantityInput, setQuantity] = useState('');
+    const [isChecked, setIsChecked] = useState(true);
     const date = new Date();
     const newDate = addDays(date, Number(criteriaInput));
     const [alarmDate, setAlarmDate] = useState(displayItemData(item_id) ? 
@@ -166,7 +174,7 @@ const Cart: NextPage = () => {
         // この部分でレスポンスを処理します...
         const data = await response.json();
         toast.success("ストックしました！");
-        deleteClick(cart_id);
+        isChecked && deleteClick(cart_id);
         mutate('http://localhost:3010/api/v1/stock_items');
       } catch (error) {
         console.error('An error occurred:', error);
@@ -177,7 +185,7 @@ const Cart: NextPage = () => {
     };
 
     return (
-      <Paper component="form">
+      <Paper component="form" sx={{ padding: "1rem", marginBottom: "1rem" }}>
         <TextField
           id="criteria"
           label="消費目安(日後)"
@@ -186,20 +194,22 @@ const Cart: NextPage = () => {
           onChange={(e) => {
             const input = e.target.value;
             if (/^[0-9]*$/.test(input)) { // 入力が半角数字のみであることを確認
-              setCriteria(input);
-              setCriteriaDate(addDays(date, Number(input)));
-              if (Number(input) === 1) { // 入力が1の場合のみ、1日を加算
-                setAlarmDate(addDays(date, 1));
+              if (input.length <= 5) {
+                setCriteria(input);
+                setCriteriaDate(addDays(date, Number(input)));
+                if (Number(input) === 1) { // 入力が1の場合のみ、1日を加算
+                  setAlarmDate(addDays(date, 1));
+                } else {
+                  setAlarmDate(addDays(date, Number(input)-Math.ceil(Number(input)/10)));
+                }
               } else {
-                setAlarmDate(addDays(date, Number(input)-Math.ceil(Number(input)/10)));
+                toast.error('消費目安は5桁まで入力できます。');
               }
             } else {
-              // setErrorMessage("数字は半角で入力してください。");
               toast.error("数字は半角で入力してください。");
-              // setIsError(true);
             }
-          }}
-          autoComplete="criteria"
+          }}        
+          helperText="※5桁まで"
         />
         <TextField
           name="price"
@@ -210,7 +220,11 @@ const Cart: NextPage = () => {
           onChange={(e) => {
             const input = e.target.value;
             if (/^[0-9]*$/.test(input)) { 
-              setPrice(e.target.value)
+              if (input.length <= 11) {
+                setPrice(e.target.value)
+              } else {
+                toast.error('値段は11桁まで入力できます。');
+              }
             }
             else {
               // setErrorMessage("数字は半角で入力してください。");
@@ -218,7 +232,7 @@ const Cart: NextPage = () => {
               // setIsError(true);
             }
           }}
-          autoComplete="price"
+          helperText="※オプション（11桁まで）"
         />
         <TextField
           name="quantity"
@@ -228,8 +242,12 @@ const Cart: NextPage = () => {
           value={quantityInput}
           onChange={(e) => {
             const input = e.target.value;
-            if (/^[0-9]*$/.test(input)) { 
-              setQuantity(e.target.value)
+            if (/^[0-9]*$/.test(input)) {
+              if (input.length <= 5) {
+                setQuantity(e.target.value)
+              } else {
+                toast.error('数量は5桁まで入力できます。');
+              }
             }
             else {
               // setErrorMessage("数字は半角で入力してください。");
@@ -237,7 +255,7 @@ const Cart: NextPage = () => {
               // setIsError(true);
             }
           }}
-          autoComplete="quantity"
+          helperText="※オプション（5桁まで）"
         />
         {isError ? (
           <Alert
@@ -250,52 +268,170 @@ const Cart: NextPage = () => {
             {errorMessage}
           </Alert>
         ) : null}
-        <Button color="success" onClick={stockClick} disabled={isLoading}>
+        <Typography variant="body1" color="textSecondary">
+          目安消費日： {format(criteriaDate, 'yyyy-MM-dd', {locale:ja})}
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
+          アラーム設定日： {format(alarmDate, 'yyyy-MM-dd', {locale:ja})}
+        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Button onClick={stockClick} disabled={isLoading}
+          sx={{
+            color: '#ff7f50',
+            '&:hover': {
+            backgroundColor: '#fff7f1',
+          },
+          display: 'flex',
+          alignItems: 'center',
+          fontWeight: 'bold', 
+          fontSize: '1.2rem', 
+        }}>
+          <Inventory /> 
           {isLoading ? 'Loading...' : 'ストック'}
         </Button>
-        <p>目安消費日： {format(criteriaDate, 'yyyy-MM-dd', {locale:ja})}</p>
-        <p>アラーム設定日： {format(alarmDate, 'yyyy-MM-dd', {locale:ja})}</p>
+        <FormControlLabel
+          control={
+            <Checkbox checked={isChecked} onChange={(e) => setIsChecked(e.target.checked)} 
+            
+            sx={{
+              paddingLeft: 2,
+              color: '#ff7f50', // チェックマークの色
+              '&.Mui-checked': {
+                color: '#ff7f50',
+              },
+            }}/>
+          }
+          label="ストック後に削除"
+          sx={{
+            fontSize: '0.1rem', 
+            color: '#4B4B4B', // ラベルの文字色
+        }}/>
+      </Box>
+      <div style={{ display: "flex" }}>
+      <Box sx={{ marginLeft: "auto" }}>
+        <Button variant="contained" color="error" onClick={() => deleteClick(cart_id)}>返品</Button>
+      </Box>
+      </div>
       </Paper>
     );
   };
 
-
-  
-
-
   return (
     <Layout {...data}>
-      <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
+      <Flex padding={2} justifyContent="center">
         <Flex
           width={{ base: '100%', md: '1040px' }}
           justifyContent="space-between"
           alignItems="center"
           flexDirection={{ base: 'column', md: 'row' }}
         >
-          <Box width="100%">
-          <Toaster />
-            <div >
-              {data.data.map((cart: any) => (
-                <li className='p-4' key={cart.id}>
-                  <p>ID: {cart.id}</p>
-                  <p>Created at: {cart.created_at}</p>
-                  <p>Updated at: {cart.updated_at}</p>
-                  <p>criteria: {cart.criteria}</p>
-                  <p>price: {cart.price}</p>
-                  <p>group_id: {cart.group_id}</p>
-                  <p>item_id: {cart.item_id}</p>
-                  <p>Discarded at: {cart.discarded_at}</p>
-                  <p>Item Name: {cart.item_name}</p>
-                  <Link href={`http://localhost:3000/cart/${cart.id}`}>Show</Link>
-                  <Button variant="contained" color="error" onClick={() => deleteClick(cart.id)}>delete</Button>
+          <Box width="100%" marginTop="10px">
+            <Flex alignItems="center" justifyContent="center">
+              <ShoppingCart style={{ color: "#4B4B4B" }} />
+              <Typography style={{ color: "#4B4B4B", marginLeft: "0.5rem" }}>カート</Typography>
+            </Flex>
+            <Toaster />
+
+            {data.data && (
+              <Grid container spacing={2} sx={{ backgroundColor: '#f4f4f4' }} marginTop="20px">
+                {data.data.map((cart: any) => (
+                  <Grid item xs={12} sm={6} md={4} key={cart.id}>
+                    <Card  sx={{
+                      maxWidth: 500,
+                      boxShadow: '2px 5px 10px -5px #9e9e9e',
+                      borderRadius: 10,
+                      }}>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={cart.product_picture ? 
+                        `/images/${cart.product_picture}` : '/images/default.png'}
+                      alt={cart.item_name}
+                      sx={{ objectFit: "cover" }}
+                    />
+                    <CardContent>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                      pl={2}
+                      pr={3}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: '0.5rem',
+                        '& svg': {
+                          marginRight: '0.25em',
+                        },
+                      }}
+                    >
+                      
+                    
+                          <FaShoppingCart style={{ marginRight: "0.25em" }} />
+                          商品名:{" "}
+                        <span style={{ fontWeight: "bold", maxWidth: '80%', 
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'  }}>
+                          {cart.item_name}
+                        </span>
+                      </Typography>
+                    </Box>
+                      <Typography  variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                        pl={2}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginBottom: '0.5rem',
+                          '& svg': {
+                            marginRight: '0.25em',
+                          },
+                        }}>
+                          <BiCategory style={{ marginRight: "0.25em" }} />
+                          カテゴリー:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {cart.category_product_name || cart.category_grocery_name}
+                        </span>
+                      </Typography>
+                      <Typography variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                      pl={2}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: '0.5rem',
+                        '& svg': {
+                          marginRight: '0.25em',
+                        },
+                      }}>
+                          <BiCategory style={{ marginRight: "0.25em" }} />
+                          サブカテゴリー:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {cart.sub_category_product_name || cart.sub_category_grocery_name}
+                        </span>
+                      </Typography>
+                    </CardContent>
+                  <Box display="flex" justifyContent="space-between" marginTop={2}>
+                    <AddStockButton item_id={cart.item_id} cart_id={cart.id} cart_criteria={cart.criteria} cart_price={cart.price}
+                    className="text-white bg-indigo-500 border-0 py-2 px-8 
+                    focus:outline-none hover:bg-indigo-600 rounded text-lg" />
+                  </Box>
                   
-                  <AddStockButton item_id={cart.item_id} cart_id={cart.id}
-                  className="text-white bg-indigo-500 border-0 py-2 px-8 
-                  focus:outline-none hover:bg-indigo-600 rounded text-lg" />
-                </li>
-              ))}
-            </div>
-            </Box>
+                </Card>
+              </Grid>
+                ))}
+                
+              </Grid>
+              )}
+          {!data.data && (
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+            カートに何も入っていません。
+          </Typography>
+        )}
+          </Box>
         </Flex>
       </Flex>
     </Layout>

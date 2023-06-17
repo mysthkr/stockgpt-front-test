@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useReducer, useState } from "react";
 import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
 import useSWR from "swr";
-import router from 'next/router';
+import router, { useRouter } from 'next/router';
 import { withAuthServerSideProps, withAuthFetch } from "../../lib/auth";
 import { GetServerSideProps } from "next";
 import Text from '../../components/atoms/Text'
@@ -11,6 +11,9 @@ import Box from '../../components/layout/Box'
 import Flex from '../../components/layout/Flex'
 import Layout from '../../components/templates/Layout'
 import { getCookie } from "lib/getCookie";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { Person, Delete } from '@mui/icons-material';
+import toast from "react-hot-toast";
 
 // const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -46,29 +49,96 @@ const Profile = (props: any, id: number) => {
   const cookieData = getCookie();
   const userId = cookieData ? cookieData.userId : '';
   const groupId = cookieData ? cookieData.groupId : '';
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
+
+
+  const handleDeleteUser = async () => {
+    setIsLoading(true);
+    const cookieData = getCookie();
+    // 退会処理を行うAPIエンドポイントのURLを設定してください
+    const url = `http://localhost:3010/api/v1/users/${userId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          "uid": cookieData?.uid || "",
+          "client": cookieData?.client || "",
+          "access-token": cookieData?.accessToken || "",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      toast.success("ユーザーを削除しました！");
+      router.push(`/home`);
+    } catch (error) {
+      console.error('An error occurred:', error);
+      toast.error("削除できません！");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Layout {...props}>
-      <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
+      <Flex padding={2} justifyContent="center">
         <Flex
           width={{ base: '100%', md: '1040px' }}
           justifyContent="space-between"
           alignItems="center"
           flexDirection={{ base: 'column', md: 'row' }}
         >
-          <Box width="100%">
-          <li className='p-4'>
-            <p>ID: {props.data[0].id}</p>
-            <p>Created at: {props.data[0].created_at}</p>
-            <p>Updated at: {props.data[0].updated_at}</p>
-            <p>user ID: {props.data[0].user_id}</p>
-            <p>Name: {props.data[0].name}</p>
-            <p>Nickname: {props.data[0].nickname}</p>
-            <Link href={`http://localhost:3000/profile/${userId}/edit`}>編集</Link>
-            <Link href={`http://localhost:3000/user/${id}`}>ユーザー削除</Link>
-          </li>
+          <Box width="100%" marginTop="10px">
+            <Flex alignItems="center" justifyContent="center">
+              <Person style={{ color: "#4B4B4B" }} />
+              <Typography style={{ color: "#4B4B4B", marginLeft: "0.5rem" }}>プロフィール</Typography>
+            </Flex>
+            <p>お名前: {props.data[0].name}</p>
+            <p>メールアドレス: {props.data[0].email}</p>
+            <p>ニックネーム: {props.data[0].nickname}</p>
+            <p>同居人数: {props.data[0].roommate_number}人</p>
+            <p>在住県: {props.data[0].prefecture}</p>
+            <p>グループ名: {props.data[0].group_name}</p>
+            <Link href={`http://localhost:3000/profile/${userId}/edit`}>プロフィール編集</Link>
+            <Button onClick={handleOpenDialog} variant="contained" startIcon={<Delete />}>
+              退会
+            </Button>
+            <Link href={`http://localhost:3000/group/${groupId}`}>グループ</Link>
           </Box>
         </Flex>
       </Flex>
+      <Dialog open={open} onClose={handleCloseDialog}>
+        <DialogTitle>退会</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ color: "#4B4B4B" }}>
+            本当に退会しますか？
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} variant="outlined">
+            キャンセル
+          </Button>
+          <Button onClick={handleDeleteUser} variant="contained" color="error">
+            退会する
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Layout>
   );
 };

@@ -14,8 +14,20 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import { Badge, Skeleton } from '@mui/material';
 import useSWR from 'swr';
 import { Inventory, Person, ShoppingCart } from '@mui/icons-material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
+const theme = createTheme({
+  components: {
+    MuiBadge: {
+      styleOverrides: {
+        badge: {
+          fontSize: '1.1rem', 
+        },
+      },
+    },
+  },
+});
 
 // ヘッダーのルート
 const HeaderRoot = styled.header`
@@ -28,6 +40,8 @@ const Nav = styled(Flex)`
   & > span:not(:first-child) {
     margin-left: 15px;
   }
+  margin-left: -15px;
+  margin-right: -15px;
 `
 
 // ナビゲーションのリンク
@@ -38,6 +52,9 @@ const NavLink = styled.span`
   color: #4B4B4B;
   transform: scale(1);
   transition: all 0.3s;
+  vertical-align: middle;
+  /* margin-left: 10px;
+  margin-right: 10px; */
   &:hover {
     transform: translateY(5px);
   }
@@ -49,6 +66,7 @@ const NavLinkContent = styled.span`
   align-items: center;
   justify-content: center;
   height: 100%;
+  padding: 0 10px;
 `
 
 // アンカー
@@ -108,10 +126,10 @@ const Header = () => {
         <Nav as="nav" height="56px" alignItems="center">
           <NavLink>
             <NavLinkContent>
-              <Link href="/" passHref>
-                <Anchor as="a">
+              <Link href="/home" passHref>
+                
                   <AppLogo />
-                </Anchor>
+
               </Link>
             </NavLinkContent>
           </NavLink>
@@ -131,15 +149,7 @@ const Header = () => {
               </Link>
               </NavLinkContent>
             </NavLink>
-            <NavLink>
-            <NavLinkContent>
-              <Box display={{ base: 'none', md: 'block' }}>
-                <Text>
-                  カテゴリ
-                </Text>
-              </Box>
-              </NavLinkContent>
-            </NavLink>
+            
           </>
         )}
         </Nav>
@@ -153,13 +163,11 @@ const Header = () => {
             <NavLink>
               <NavLinkContent>
                 <Link href="/cart" passHref>
-                  <Anchor as="a">
                     <BadgeIconButton
-                      icon={<ShoppingCart style={{ color: '#4B4B4B', fontSize: 24 }} />}
+                      icon={<ShoppingCart style={{ color: '#4B4B4B', fontSize: 32 }} />}
                       size="24px"
                       badgeBackgroundColor="textColor"
                     />
-                  </Anchor>
                 </Link>
               </NavLinkContent>
             </NavLink>
@@ -167,9 +175,9 @@ const Header = () => {
             <NavLink>
               <NavLinkContent>
                 <Link href={`/profile/${userId}`}  passHref>
-                <Anchor as="a">
-                  <Person style={{ color: '#4B4B4B', fontSize: 24 }} />
-                  </Anchor>
+                
+                  <Person style={{ color: '#4B4B4B', fontSize: 34 }} />
+
                 </Link>
               </NavLinkContent>
             </NavLink>
@@ -177,18 +185,21 @@ const Header = () => {
             <NavLink>
               <NavLinkContent>
                 <Link href="/stock_item" passHref>
-                  <Badge badgeContent={data.data.length} style={{ color: '#ff7f50', fontSize: 24 }}>
-                    <Inventory style={{ color: '#4B4B4B', fontSize: 24 }}/>
+                <ThemeProvider theme={theme}>
+                  <Badge 
+                    badgeContent={data?.data?.length || 0} style={{ color: '#ff7f50', fontSize: 32 }}>
+                    <Inventory style={{ color: '#4B4B4B', fontSize: 32 }}/>
                   </Badge>
+                </ThemeProvider>
                 </Link>
               </NavLinkContent>
             </NavLink>
             <NavLink>
               <NavLinkContent>
                 <Link href="/to_buy_list" passHref>
-                  <Button as="a">
-                    <EditNoteIcon style={{ color: '#4B4B4B', fontSize: 24 }} />
-                  </Button>
+                  
+                    <EditNoteIcon style={{ color: '#4B4B4B', fontSize: 38, marginRight: 20}} />
+                  
                 </Link>
               </NavLinkContent>
             </NavLink>

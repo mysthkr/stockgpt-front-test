@@ -23,7 +23,7 @@ import { MdFavorite } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
 import { FaIndustry, FaShoppingCart } from "react-icons/fa"; 
 import { BiCategory } from "react-icons/bi"; 
-import { ShoppingCartIcon } from "components/atoms/IconButton";
+import { Inventory, Person, ShoppingCart } from '@mui/icons-material';
 import { Search } from "@mui/icons-material";
 
 
@@ -246,8 +246,8 @@ const Product: NextPage = () => {
             if (/^[0-9]*$/.test(input)) { 
               if (input.length <= 11) {
                 setPrice(e.target.value)
-              }else {
-                toast.error('消費目安は11桁まで入力できます。');
+              } else {
+                toast.error('金額は11桁まで入力できます。');
               }
             } else {
               toast.error("数字は半角で入力してください。");
@@ -276,7 +276,7 @@ const Product: NextPage = () => {
           display: 'flex',
           alignItems: 'center',
         }}>
-          <ShoppingCartIcon />
+          <ShoppingCart />
           {isLoading ? 'Loading...' : 'カートに追加'}
         </Button>
       </Paper>
@@ -492,44 +492,46 @@ const Product: NextPage = () => {
           <Box width="100%">
           <Toaster />
             <Box>
-              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
                 <Tab label="食料品"  value={0} />
                 <Tab label="日用品"  value={1} />
               </Tabs>
             </Box>
-            <TabPanel value={value} index={0} sx={{ marginY: 'auto', marginX: 'auto' }}>
-            </TabPanel>
-            <TabPanel value={value} index={1} sx={{ marginY: 'auto', marginX: 'auto' }}>
-            </TabPanel>
-            <Box width="300px" marginX="auto"  mb={4} mt={2}>
-            <form method="POST" onSubmit={clickSubmit} style={{ display: 'flex', alignItems: 'center' }}>
-              <TextField
-                variant="outlined"
-                value={text}
-                onChange={changeText}
-                label="検索"
-                size="small"
-                sx={{ marginRight: '8px', flex: 1 }}
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<Search />}
-                sx={{
-                  backgroundColor: '#ff7f50',
-                  color: 'white',
-                  '&:hover': {
+            <Box>
+              <TabPanel value={value} index={0} sx={{ marginY: 'auto', marginX: 'auto' }}>
+              </TabPanel>
+              <TabPanel value={value} index={1} sx={{ marginY: 'auto', marginX: 'auto' }}>
+              </TabPanel>
+            </Box>
+            <Box width="400px" marginX="auto"  mb={4} mt={2}>
+              <form method="POST" onSubmit={clickSubmit} style={{ display: 'flex', alignItems: 'center' }}>
+                <TextField
+                  variant="outlined"
+                  value={text}
+                  onChange={changeText}
+                  label="検索"
+                  size="small"
+                  sx={{ marginRight: '8px', flex: 1 }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<Search />}
+                  sx={{
                     backgroundColor: '#ff7f50',
-                    transform: 'translateY(5px)',
-                    boxShadow: 'none',
-                  },
-                  transition: 'all 0.3s',
-                }}
-              >
-                検索
-              </Button>
-            </form>
-          </Box>
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: '#ff7f50',
+                      transform: 'translateY(5px)',
+                      boxShadow: 'none',
+                    },
+                    transition: 'all 0.3s',
+                  }}
+                >
+                  検索
+                </Button>
+              </form>
+            </Box>
             {itemDataExists && (
             <Grid container spacing={2} sx={{ backgroundColor: '#f4f4f4' }}>
               {itemData.map((product: any) => (

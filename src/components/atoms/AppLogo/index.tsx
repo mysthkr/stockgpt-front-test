@@ -1,10 +1,16 @@
 import Image from 'next/image'
+import styled from 'styled-components';
 
-/**
- * ロゴ
- */
+const LogoWrapper = styled.div`
+  padding-left: 10px;
+`;
+
 const AppLogo = () => {
-  return <Image src="/logo_transparent.png" alt="logo" width="100" height="80" />
+  return (
+    <LogoWrapper>
+      <Image src="/logo_transparent.png" alt="logo" width="150" height="45" />
+    </LogoWrapper>
+  );
 }
 
 export default AppLogo

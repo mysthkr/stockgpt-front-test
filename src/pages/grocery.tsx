@@ -25,8 +25,9 @@ import { MdFavorite } from "react-icons/md";
 import { GrFavorite } from "react-icons/gr";
 import { FaIndustry, FaShoppingCart } from "react-icons/fa"; 
 import { BiCategory } from "react-icons/bi"; 
-import { ShoppingCartIcon } from "components/atoms/IconButton";
+// import { ShoppingCartIcon } from "components/atoms/IconButton";
 import { Search } from "@mui/icons-material";
+import { Inventory, Person, ShoppingCart } from '@mui/icons-material';
 
 
 const fetcher = (url: string) => {
@@ -285,7 +286,7 @@ const Grocery: NextPage = () => {
           display: 'flex',
           alignItems: 'center',
         }}>
-          <ShoppingCartIcon />
+          <ShoppingCart />
           {isLoading ? 'Loading...' : 'カートに追加'}
         </Button>
       </Paper>
@@ -503,7 +504,7 @@ const Grocery: NextPage = () => {
           <Box width="100%">
           <Toaster />
             <Box>
-              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
                 <Tab label="食料品"  value={0} />
                 <Tab label="日用品"  value={1} />
               </Tabs>
@@ -512,7 +513,7 @@ const Grocery: NextPage = () => {
             </TabPanel>
             <TabPanel value={value} index={1} sx={{ marginY: 'auto', marginX: 'auto' }}>
             </TabPanel>
-            <Box width="300px" marginX="auto"  mb={4} mt={2}>
+            <Box width="400px" marginX="auto"  mb={4} mt={2}>
             <form method="POST" onSubmit={clickSubmit} style={{ display: 'flex', alignItems: 'center' }}>
               <TextField
                 variant="outlined"

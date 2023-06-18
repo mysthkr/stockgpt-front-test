@@ -11,8 +11,11 @@ import Flex from '../../components/layout/Flex'
 import Layout from '../../components/templates/Layout'
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Typography, List, ListItem, ListItemText, IconButton,
-        Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Skeleton } from "@mui/material";
+        Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Skeleton, ThemeProvider, Badge } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
+import MessageIcon from '@mui/icons-material/Message';
+import { theme } from "themes";
+import { Message } from "@mui/icons-material";
 
 const fetcher = (url: string) => {
   const cookieData = getCookie();
@@ -26,7 +29,6 @@ const fetcher = (url: string) => {
     },
   }).then((res) => res.json())
 };
-
 
 
 export async function getServerSideProps(context: { query?: any; req?: any; res?: any; }) {
@@ -195,7 +197,7 @@ const Group= (props: any, id: number) => {
       // ユーザーのgroup_id情報を更新する場合の処理を追加
 
       toast.success("招待を承認しました！");
-      router.push('/home');
+      router.push('/');
       mutate('http://localhost:3010/api/v1/invitations');
     } catch (error) {
       console.error('An error occurred:', error);
@@ -249,6 +251,7 @@ const Group= (props: any, id: number) => {
       プロフィール編集
     </Link>
     <Button onClick={handleOpenDialog}>グループ招待</Button>
+    
   </Box>
 </Box>
         </Flex>

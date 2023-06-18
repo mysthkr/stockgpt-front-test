@@ -70,7 +70,7 @@ const Signup = () => {
                       Cookies.set("uid", response.headers["uid"]);
                       Cookies.set("client", response.headers["client"]);
                       Cookies.set("access-token", response.headers["access-token"]);
-                      router.push("/home");
+                      router.push("/");
                     })
                     .catch(function (error) {
                       setIsError(true);

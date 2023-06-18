@@ -126,7 +126,7 @@ const Header = () => {
         <Nav as="nav" height="56px" alignItems="center">
           <NavLink>
             <NavLinkContent>
-              <Link href="/home" passHref>
+              <Link href="/" passHref>
                 
                   <AppLogo />
 

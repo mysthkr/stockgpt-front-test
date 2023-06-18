@@ -23,6 +23,8 @@ export type BoxProps = {
   paddingRight?: Responsive<Space>
   paddingBottom?: Responsive<Space>
   paddingLeft?: Responsive<Space>
+  textAlign?: Responsive<string>
+  alignItems?: Responsive<string>
 }
 
 /**
@@ -49,6 +51,8 @@ const Box = styled.div<BoxProps>`
   ${(props) => toPropValue('padding-left', props.paddingLeft, props.theme)}
   ${(props) => toPropValue('padding-bottom', props.paddingBottom, props.theme)}
   ${(props) => toPropValue('padding-right', props.paddingRight, props.theme)}
+  ${(props) => toPropValue('text-align', props.textAlign, props.theme)}
+  ${(props) => toPropValue('align-items', props.alignItems, props.theme)}
 `
 
 export default Box

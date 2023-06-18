@@ -11,8 +11,8 @@ import Box from '../../components/layout/Box'
 import Flex from '../../components/layout/Flex'
 import Layout from '../../components/templates/Layout'
 import { getCookie } from "lib/getCookie";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { Person, Delete } from '@mui/icons-material';
+import { Badge, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { Person, Delete, Message } from '@mui/icons-material';
 import toast from "react-hot-toast";
 
 // const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -42,6 +42,46 @@ export async function getServerSideProps(context: { query?: any; req?: any; res?
     return { props: { data: data } };
   }
   return { props: { data } };
+};
+
+
+const RequestNavLink = () => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  return (
+    <Link href="/request" passHref>
+        <Badge
+          color="secondary"
+          overlap="circular"
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+        <Box display="flex" alignItems="center">
+          <Message
+            style={{
+              color: isHovered ? "#ff7f50" : "#4B4B4B",
+              fontSize: 32,
+            }}
+          />
+          <span style={{ fontSize: 16,
+            color: isHovered ? "#ff7f50" : "#4B4B4B",
+            }}>リクエスト</span>
+          </Box>
+        </Badge>
+    </Link>
+  );
 };
 
 
@@ -86,7 +126,7 @@ const Profile = (props: any, id: number) => {
       }
       const data = await response.json();
       toast.success("ユーザーを削除しました！");
-      router.push(`/home`);
+      router.push(`/`);
     } catch (error) {
       console.error('An error occurred:', error);
       toast.error("削除できません！");
@@ -120,6 +160,7 @@ const Profile = (props: any, id: number) => {
               退会
             </Button>
             <Link href={`http://localhost:3000/group/${groupId}`}>グループ</Link>
+            <RequestNavLink />
           </Box>
         </Flex>
       </Flex>

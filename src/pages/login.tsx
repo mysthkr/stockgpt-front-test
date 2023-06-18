@@ -116,7 +116,7 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           ログイン
         </Typography>
-        <Box component="form" onSubmit={handleGuestSubmit}>
+        <Box component="form" onSubmit={handleSubmit}>
           <TextField
             id="email"
             label="メールアドレス"

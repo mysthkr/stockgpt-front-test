@@ -9,6 +9,10 @@ import BadgeIconButton from 'components/molecules/BadgeIconButton'
 import { getCookie } from "lib/getCookie";
 import useSWR from 'swr';
 import Typography from '@mui/material/Typography';
+import { useRouter } from 'next/router'
+import axios from 'axios'
+import { useState } from 'react'
+import Cookies from 'js-cookie'
 
 
 const CustomTypography = styled(Typography)({
@@ -46,7 +50,15 @@ const Anchor = styled(Text)`
 `
 
 const StyledButton = styled(Button)`
-  color: #ffffff; 
+  && {
+    text-decoration: none;
+    transition: border-bottom-color 0.1s ease-in-out;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      border-bottom-color: #ffffff;
+    }
+  }
 `;
 
 /**
@@ -57,6 +69,64 @@ const GlobalNav = () => {
   const userId = cookieData ? cookieData.userId : '';
   const groupId = cookieData ? cookieData.groupId : '';
   /* if (error) return <div>Failed to load</div> */
+
+  const router = useRouter();
+  const [isError, setIsError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const handleSignoutSubmit = (event: any) => {
+    event.preventDefault();
+    const cookieData = getCookie();
+    // const data = new FormData(event.currentTarget);
+    const axiosInstance = axios.create({
+      baseURL: `http://localhost:3010/api/v1/`,
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    (async () => {
+      setIsError(false);
+      setErrorMessage("");
+      return await axiosInstance.delete("auth/sign_out", {
+          // credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            "uid": cookieData?.uid || "",
+            "client": cookieData?.client || "",
+            "access-token": cookieData?.accessToken || "",
+          },
+        })
+        .then(function (response) {
+          // Cookieにトークンをセットしています
+          console.log(response.headers);
+          console.log(response);
+          Cookies.set("uid", "");
+          Cookies.set("client", "");
+          Cookies.set("access-token", "");
+          Cookies.set("id", "");
+          Cookies.set("group_id", "");
+          router.push("/");
+        })
+        .catch(function (error) {
+          // Cookieからトークンを削除しています
+          Cookies.remove("uid");
+          Cookies.remove("client");
+          Cookies.remove("access-token");
+          setIsError(true);
+          setErrorMessage(error.response.data.errors[0]);
+        });
+    })();
+  };
+
+  const SignoutButton = () => {
+    return (
+      <Link href="/sell" passHref>
+        <StyledButton as="a" onClick={handleSignoutSubmit}>
+          <CustomTypography variant="body1" >ログアウト</CustomTypography>
+        </StyledButton>
+      </Link>
+    );
+  };
 
   return (
     <GlobalNavRoot>
@@ -110,11 +180,7 @@ const GlobalNav = () => {
               // 認証していたらアイコンを表示
               if (userId && groupId) {
                 return (
-                  <NavLink>
-                    <Link href="/sell" passHref>
-                      <StyledButton as="a">ログアウト</StyledButton>
-                    </Link>
-                  </NavLink>
+                  <SignoutButton />
                 )
               } 
             })()}

@@ -24,7 +24,7 @@ const Login = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const axiosInstance = axios.create({
-      baseURL: `http://localhost:3010/api/v1/`,
+      baseURL: `http://172.20.0.4:3010/api/v1/`,
       headers: {
         "content-type": "application/json",
       },
@@ -64,7 +64,7 @@ const Login = () => {
       event.preventDefault();
       // const data = new FormData(event.currentTarget);
       const axiosInstance = axios.create({
-        baseURL: `http://localhost:3010/api/v1/`,
+        baseURL: `http://172.20.0.4:3010/api/v1/`,
         headers: {
           "content-type": "application/json",
         },
@@ -116,7 +116,7 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           ログイン
         </Typography>
-        <Box component="form" onSubmit={handleGuestSubmit}>
+        <Box component="form" onSubmit={handleSubmit}>
           <TextField
             id="email"
             label="メールアドレス"

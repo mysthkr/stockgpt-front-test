@@ -24,7 +24,7 @@ const Login = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const axiosInstance = axios.create({
-      baseURL: `http://localhost:3010/api/v1/`,
+      baseURL: `http://172.20.0.4:3010/api/v1/`,
       headers: {
         "content-type": "application/json",
       },
@@ -64,7 +64,7 @@ const Login = () => {
       event.preventDefault();
       // const data = new FormData(event.currentTarget);
       const axiosInstance = axios.create({
-        baseURL: `http://localhost:3010/api/v1/`,
+        baseURL: `http://172.20.0.4:3010/api/v1/`,
         headers: {
           "content-type": "application/json",
         },

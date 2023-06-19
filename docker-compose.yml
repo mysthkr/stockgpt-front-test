@@ -11,8 +11,12 @@ services:
       - /app/node_modules
     command: npm run dev
     networks:
-      - default
-      - stockgpt_default
-# networks:
+    #   - default
+      # - stockgpt_default
+      - back_default
+networks:
+  back_default:
+    external: true
 #   stockgpt_default:
 #     external: true
+

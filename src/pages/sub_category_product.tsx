@@ -32,7 +32,7 @@ const SubCategoryProduct: NextPage = () => {
           <p>Sub Category Grocery ID: {sub_category_product.sub_category_sub_category_product_id}</p>
           <p>Item ID: {sub_category_product.item_id}</p>
           <p>Maker ID: {sub_category_product.maker_id}</p>
-          <Link href={`http://localhost:3000/sub_category_product/${sub_category_product.id}`}>Show</Link>
+          <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/sub_category_product/${sub_category_product.id}`}>Show</Link>
         </li>
       ))}
     </div>

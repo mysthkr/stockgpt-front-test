@@ -24,7 +24,7 @@ const Product: NextPage = () => {
           <p>Created at: {maker.created_at}</p>
           <p>Updated at: {maker.updated_at}</p>
           <p>name: {maker.name}</p>
-          <Link href={`http://localhost:3000/maker/${maker.id}`}>Show</Link>
+          <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/maker/${maker.id}`}>Show</Link>
         </li>
       ))}
     </div>

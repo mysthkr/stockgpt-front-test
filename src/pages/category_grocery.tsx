@@ -24,7 +24,7 @@ const CategoryGrocery = (props: any) => {
           <p>Created at: {category_grocery.created_at}</p>
           <p>Updated at: {category_grocery.updated_at}</p>
           <p>Name: {category_grocery.name}</p>
-          <Link href={`http://localhost:3000/category_grocery/${category_grocery.id}`}>Show</Link>
+          <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/category_grocery/${category_grocery.id}`}>Show</Link>
         </li>
       ))}l
     </div>

@@ -247,7 +247,7 @@ const Group= (props: any, id: number) => {
       </Typography>
       {renderData}
   <Box sx={{ paddingLeft: '1rem', marginTop: '1rem' }}>
-    <Link href={`http://localhost:3000/profile/${userId}/edit`}>
+    <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/profile/${userId}/edit`}>
       プロフィール編集
     </Link>
     <Button onClick={handleOpenDialog}>グループ招待</Button>

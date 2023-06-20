@@ -29,7 +29,7 @@ const CategoryProduct: NextPage = () => {
           <p>Created at: {category_product.created_at}</p>
           <p>Updated at: {category_product.updated_at}</p>
           <p>Name: {category_product.name}</p>
-          <Link href={`http://localhost:3000/category_product/${category_product.id}`}>Show</Link>
+          <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/category_product/${category_product.id}`}>Show</Link>
         </li>
       ))}
     </div>

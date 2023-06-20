@@ -20,7 +20,7 @@ const SubCategoryGrocery = (props: any) => {
           <p>Updated at: {sub_category_grocery.updated_at}</p>
           <p>name: {sub_category_grocery.name}</p>
           <p>Maker ID: {sub_category_grocery.category_grocery_id}</p>
-          <Link href={`http://localhost:3000/sub_category_grocery/${sub_category_grocery.id}`}>Show</Link>
+          <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/sub_category_grocery/${sub_category_grocery.id}`}>Show</Link>
         </li>
       ))}
     </div>

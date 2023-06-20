@@ -12,6 +12,8 @@ import axios from "axios"
 import Cookies from "js-cookie"
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
+import { Toaster, toast } from "react-hot-toast";
+import { getCookie } from "lib/getCookie";
 
 // console.log(useUserContext());
 
@@ -20,11 +22,20 @@ const Login = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  const cookieData = getCookie();
+  if  ((cookieData?.uid && cookieData?.uid !== "undefined" )&&
+      (cookieData?.client  && cookieData?.client !=="undefined" )&&
+      (cookieData?.accessToken && cookieData?.accessToken !=="undefined" )) {
+        toast.success("既にログインしています！");
+        toast.success("ホーム画面に遷移します！");
+        router.push("/");
+  }
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const axiosInstance = axios.create({
-      baseURL: `http://172.20.0.4:3010/api/v1/`,
+      baseURL: `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/`,
       headers: {
         "content-type": "application/json",
       },
@@ -46,6 +57,8 @@ const Login = () => {
           Cookies.set("access-token", response.headers["access-token"]);
           Cookies.set("id", response.data.data["id"]);
           Cookies.set("group_id", response.data.data["group_id"]);
+          toast.success("ログインしました！");
+          toast.success("ホーム画面に遷移します！");
           router.push("/");
         })
         .catch(function (error) {
@@ -64,7 +77,7 @@ const Login = () => {
       event.preventDefault();
       // const data = new FormData(event.currentTarget);
       const axiosInstance = axios.create({
-        baseURL: `http://172.20.0.4:3010/api/v1/`,
+        baseURL: `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/`,
         headers: {
           "content-type": "application/json",
         },
@@ -101,6 +114,7 @@ const Login = () => {
 
   return (
     <Layout>
+      <Toaster />
     <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
       <Flex
         width={{ base: '100%', md: '1040px' }}

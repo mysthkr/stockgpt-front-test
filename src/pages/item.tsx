@@ -7,7 +7,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Product: NextPage = () => {
   const { data, error } = useSWR(
-    "http://localhost:3010/api/v1/items",
+    `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/items`,
     fetcher
   );
 

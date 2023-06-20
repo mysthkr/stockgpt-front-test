@@ -35,7 +35,7 @@ const fetcher = (url: string) => {
 
 const Cart: NextPage = () => {
   const { data, error } = useSWR(
-    "http://localhost:3010/api/v1/carts",
+    `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/carts`,
     fetcher
   );
   const [isError, setIsError] = useState<boolean>(false);
@@ -47,7 +47,7 @@ const Cart: NextPage = () => {
   // START HERE for fetchAllCriteriaData
   const fetchAllData = async () => {
     const cookieData = getCookie();
-    const response = await fetch("http://localhost:3010/api/v1/criteria_days",{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/criteria_days`,{
       credentials: 'include',
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +92,7 @@ const Cart: NextPage = () => {
     setIsLoading(true);
     const cookieData = getCookie();
     try {
-      const response = await fetch(`http://localhost:3010/api/v1/carts/${cartId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/carts/${cartId}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -109,7 +109,7 @@ const Cart: NextPage = () => {
       // この部分でレスポンスを処理します...
       const data = await response.json();
       toast.success("カートから削除しました！");
-      mutate('http://localhost:3010/api/v1/carts');
+      mutate('`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/carts');
     } catch (error) {
       console.error('An error occurred:', error);
       toast.error("削除できません！");
@@ -156,7 +156,7 @@ const Cart: NextPage = () => {
           item_id: Number(item_id),
           quantity: Number(quantityInput),
         }
-        const response = await fetch(`http://localhost:3010/api/v1/stock_items`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/stock_items`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -175,7 +175,7 @@ const Cart: NextPage = () => {
         const data = await response.json();
         toast.success("ストックしました！");
         isChecked && deleteClick(cart_id);
-        mutate('http://localhost:3010/api/v1/stock_items');
+        mutate(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/stock_items`);
       } catch (error) {
         console.error('An error occurred:', error);
         toast.error("ストックできません！");

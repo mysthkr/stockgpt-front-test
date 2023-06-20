@@ -10,6 +10,7 @@ import {
 } from "@mui/material/"
 import axios from "axios"
 import Cookies from "js-cookie"
+import toast, { Toaster } from "react-hot-toast";
 
 const Signup = () => {
   const router = useRouter();
@@ -19,8 +20,18 @@ const Signup = () => {
   const handleSubmit = (event: any) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
+    const email = data.get("email");
+    const password = data.get("password");
+
+    if (!email || !password) {
+      setIsError(true);
+      setErrorMessage("メールアドレスとパスワードを入力してください");
+      return;
+    }
+
     const axiosInstance = axios.create({
-      baseURL: `http://localhost:3010/api/v1/`,
+      baseURL: `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/`,
       headers: {
         "content-type": "application/json",
       },
@@ -42,8 +53,8 @@ const Signup = () => {
             setErrorMessage("");
             return await axiosInstance
               .post("auth", {
-                email: data.get("email"),
-                password: data.get("password"),
+                email: email,
+                password: password,
                 group_id: group_id,
               })
               .then(function (response) {
@@ -70,23 +81,27 @@ const Signup = () => {
                       Cookies.set("uid", response.headers["uid"]);
                       Cookies.set("client", response.headers["client"]);
                       Cookies.set("access-token", response.headers["access-token"]);
-                      router.push("/");
+                      toast.success("登録に成功しました！");
+                      toast.success("ログイン画面に遷移します！");
+                      setTimeout(() => {
+                        router.push("/");
+                      }, 1000);
                     })
                     .catch(function (error) {
                       setIsError(true);
-                      setErrorMessage(error.response.data.errors[0]);
+                      setErrorMessage("やり直してください。");
                     });
                   })();
                 })
               .catch(function (error) {
                 setIsError(true);
-                setErrorMessage(error.response.data.errors[0]);
+                setErrorMessage("やり直してください。");
               });
           })();
         })
         .catch(function (error) {
           setIsError(true);
-          setErrorMessage(error.response.data.errors[0]);
+          setErrorMessage("やり直してください。");
         });
     })();
     
@@ -94,9 +109,10 @@ const Signup = () => {
 
   return (
     <Container component="main" maxWidth="xs">
+      <Toaster />
       <Box>
         <Typography component="h1" variant="h5">
-          サインイン
+          サインアップ
         </Typography>
         <Box component="form" onSubmit={handleSubmit}>
           <TextField
@@ -117,6 +133,7 @@ const Signup = () => {
             type="submit"
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={isError} 
           >
             新規登録
           </Button>

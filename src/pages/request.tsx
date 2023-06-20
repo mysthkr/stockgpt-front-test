@@ -33,7 +33,7 @@ const Request: NextPage = (props: any) => {
     const userId = cookieData ? cookieData.userId : '';
     const groupId = cookieData ? cookieData.groupId : '';
     const axiosInstance = axios.create({
-      baseURL: `http://localhost:3010/api/v1/`,
+      baseURL: `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/`,
     });
       setIsError(false);
       setErrorMessage("");

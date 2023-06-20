@@ -65,7 +65,7 @@ const Group= (props: any, id: number) => {
   const [email, setEmail] = useState('');
 
   const { data: invitations, error } = useSWR(
-    "http://localhost:3010/api/v1/invitations",
+    `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/invitations`,
     fetcher
   );
 
@@ -103,7 +103,7 @@ const Group= (props: any, id: number) => {
     setIsLoading(true);
     const cookieData = getCookie();
     try {
-      const response = await fetch(`http://localhost:3010/api/v1/users/change_group`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/users/change_group`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -145,7 +145,7 @@ const Group= (props: any, id: number) => {
     setIsLoading(true);
     const cookieData = getCookie();
     try {
-      const response = await fetch(`http://localhost:3010/api/v1/invitations`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/invitations`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -178,7 +178,7 @@ const Group= (props: any, id: number) => {
     setIsLoading(true);
     const cookieData = getCookie();
     try {
-      const response = await fetch(`http://localhost:3010/api/v1/users/approve_group`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/users/approve_group`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -198,7 +198,7 @@ const Group= (props: any, id: number) => {
 
       toast.success("招待を承認しました！");
       router.push('/');
-      mutate('http://localhost:3010/api/v1/invitations');
+      mutate(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/invitations`);
     } catch (error) {
       console.error('An error occurred:', error);
       toast.error("招待を承認できません！");

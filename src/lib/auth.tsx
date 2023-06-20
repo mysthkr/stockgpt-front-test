@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 
 export const withAuthFetch = async (url: string, cookies: { [x: string]: any; }): Promise<Response> => {
-  return await fetch(`http://172.20.0.4/api/v1/${url}`, {
+  return await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/${url}`, {
     headers: {
       "Content-Type": "application/json",
       "uid": cookies["uid"],
@@ -21,7 +21,7 @@ export const withAuthServerSideProps = (url: string): GetServerSideProps => {
     }
     console.log("url");
     console.log(url);
-    const response = await fetch(`http://172.20.0.4:3010/api/v1/${url}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/${url}`, {
       headers: {
         "Content-Type": "application/json",
         "uid": req.cookies["uid"]!,

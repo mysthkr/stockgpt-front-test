@@ -107,7 +107,7 @@ const Profile = (props: any, id: number) => {
     setIsLoading(true);
     const cookieData = getCookie();
     // 退会処理を行うAPIエンドポイントのURLを設定してください
-    const url = `http://localhost:3010/api/v1/users/${userId}`;
+    const url = `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/users/${userId}`;
 
     try {
       const response = await fetch(url, {

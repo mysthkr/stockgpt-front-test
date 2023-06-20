@@ -27,7 +27,7 @@ const Home = () => {
               StockGPT - 食品と日用品の在庫管理をサポートするアプリ
             </Typography>
             <Typography variant="body1" color="textSecondary">
-              StockGPTは、食品や日用品の購入、活用、在庫管理をサポートするアプリです。もうすぐ期限が切れる日用品や食品を通知してくれます。自動的に買い物リストを作成し、日用品の買い忘れを防止します。
+              StockGPTは、食品や日用品の購入、活用、在庫管理をサポートするアプリです。もうすぐ期限が切れる日用品や食品を通知してくれます。買い物リストを作成し、買い忘れを防止します。
             </Typography>
           </Box>
 
@@ -48,7 +48,7 @@ const Home = () => {
                   購入リスト機能
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  利用期限が近い日用品を自動的に追加します。食品も追加できます。購入したかどうかをチェックし、自動的にカートに追加します。
+                  利用期限が近い日用品を追加します。食品も追加できます。購入したかどうかをチェックし、カートに追加します。
                 </Typography>
               </CardContent>
             </Card>

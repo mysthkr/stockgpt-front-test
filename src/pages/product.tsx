@@ -8,7 +8,6 @@ import { Alert, IconButton, Paper, Skeleton, Tab, Tabs, TextField, Typography,
         Grid, Card, CardContent, CardMedia, Button, Box, styled} from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { TabPanel } from "@mui/lab";
-import { ItemDialog } from "components/organisms/ItemDialog";
 // import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
 import Layout from 'components/templates/Layout'
@@ -58,7 +57,7 @@ const Product: NextPage = () => {
 
   const [text, setText] = useState('');
   const { data, error } = useSWR(
-    "http://localhost:3010/api/v1/products",
+    `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/products`,
     fetcher
   );
   const [itemData, setItemData] = useState<any[]>([]);
@@ -80,7 +79,7 @@ const Product: NextPage = () => {
   // START HERE for fetchAllCriteriaData
   const fetchAllData = async () => {
     const cookieData = getCookie();
-    const response = await fetch("http://localhost:3010/api/v1/criteria_days",{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/criteria_days`,{
       credentials: 'include',
       headers: {
         "Content-Type": "application/json",
@@ -92,10 +91,10 @@ const Product: NextPage = () => {
     const data = await response.json();
     return data;
   }
-    // START HERE for fetchAllCriteriaData
+    // START HERE for fetchFavoriteData
     const fetchFavoriteAllData = async () => {
       const cookieData = getCookie();
-      const response = await fetch("http://localhost:3010/api/v1/favorites",{
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/favorites`,{
         credentials: 'include',
         headers: {
           "Content-Type": "application/json",
@@ -184,7 +183,7 @@ const Product: NextPage = () => {
           price: Number(priceInput),
           item_id: Number(item_id),
         }
-        const response = await fetch('http://localhost:3010/api/v1/carts', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/carts`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -297,7 +296,7 @@ const Product: NextPage = () => {
         const item = {
           item_id: Number(item_id),
         }
-        const response = await fetch('http://localhost:3010/api/v1/to_buy_lists', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/to_buy_lists`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -363,7 +362,7 @@ const Product: NextPage = () => {
     e.preventDefault(); 
     const cookieData = getCookie();
     const axiosInstance = axios.create({
-      baseURL: `http://localhost:3010/api/v1/`,
+      baseURL: `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/`,
     });
       setIsError(false);
       setErrorMessage("");
@@ -412,7 +411,7 @@ const Product: NextPage = () => {
     setIsLoading(true);
       const cookieData = getCookie();
       try {
-        const response = await fetch('http://localhost:3010/api/v1/favorites', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/favorites`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -449,7 +448,7 @@ const Product: NextPage = () => {
       console.log(cookieData);
       console.log(itemId);
       try {
-        const response = await fetch(`http://localhost:3010/api/v1/favorites/${itemId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/favorites/${itemId}`, {
           method: 'DELETE',
           credentials: 'include',
           headers: {

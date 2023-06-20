@@ -2,8 +2,6 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import AppLogo from 'components/atoms/AppLogo';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-import ShapeImage from 'components/atoms/ShapeImage'
-import Spinner from 'components/atoms/Spinner'
 import Text from 'components/atoms/Text'
 import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'
@@ -115,7 +113,7 @@ const Header = () => {
   console.log("userId, groupId");
   console.log(userId, groupId);
   const { data, error } = useSWR(
-    `http://localhost:3010/api/v1/stock_items/alarms`,
+    `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/stock_items/alarms`,
     fetcher
   );
   if (error) return <div>An error has occurred.</div>;

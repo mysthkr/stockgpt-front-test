@@ -60,7 +60,7 @@ const Grocery: NextPage = () => {
 
   const [text, setText] = useState('');
   const { data, error } = useSWR(
-    `http://localhost:3010/api/v1/groceries`,
+    `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/groceries`,
     fetcher
   );
   const [itemData, setItemData] = useState<any[]>([]);
@@ -82,7 +82,7 @@ const Grocery: NextPage = () => {
   // START HERE for fetchAllCriteriaData
   const fetchAllData = async () => {
     const cookieData = getCookie();
-    const response = await fetch("http://localhost:3010/api/v1/criteria_days",{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/criteria_days`,{
       credentials: 'include',
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const Grocery: NextPage = () => {
   // START HERE for fetchAllCriteriaData
   const fetchFavoriteAllData = async () => {
     const cookieData = getCookie();
-    const response = await fetch("http://localhost:3010/api/v1/favorites",{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/favorites`,{
       credentials: 'include',
       headers: {
         "Content-Type": "application/json",
@@ -194,7 +194,7 @@ const Grocery: NextPage = () => {
           price: Number(priceInput),
           item_id: Number(item_id),
         }
-        const response = await fetch('http://localhost:3010/api/v1/carts', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/carts`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -257,7 +257,7 @@ const Grocery: NextPage = () => {
               if (input.length <= 11) {
                 setPrice(e.target.value)
               }else {
-                toast.error('消費目安は11桁まで入力できます。');
+                toast.error('値段は11桁まで入力できます。');
               }
             } else {
               toast.error("数字は半角で入力してください。");
@@ -309,7 +309,7 @@ const Grocery: NextPage = () => {
         const item = {
           item_id: Number(item_id),
         }
-        const response = await fetch('http://localhost:3010/api/v1/to_buy_lists', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/to_buy_lists`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -376,7 +376,7 @@ const Grocery: NextPage = () => {
     e.preventDefault(); 
     const cookieData = getCookie();
     const axiosInstance = axios.create({
-      baseURL: `http://localhost:3010/api/v1/`,
+      baseURL: `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/`,
     });
       setIsError(false);
       setErrorMessage("");
@@ -425,7 +425,7 @@ const Grocery: NextPage = () => {
     setIsLoading(true);
       const cookieData = getCookie();
       try {
-        const response = await fetch('http://localhost:3010/api/v1/favorites', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/favorites`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -462,7 +462,7 @@ const Grocery: NextPage = () => {
       console.log(cookieData);
       console.log(itemId);
       try {
-        const response = await fetch(`http://localhost:3010/api/v1/favorites/${itemId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/favorites/${itemId}`, {
           method: 'DELETE',
           credentials: 'include',
           headers: {

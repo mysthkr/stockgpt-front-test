@@ -12,7 +12,7 @@ export const getServerSideProps: GetServerSideProps =
 
 const CategoryProduct: NextPage = () => {
   const { data, error } = useSWR(
-    "http://localhost:3010/api/v1/category_products",
+    `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/category_products`,
     fetcher
   );
 

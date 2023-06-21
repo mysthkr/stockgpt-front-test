@@ -115,8 +115,12 @@ const Header = () => {
   const cookieData = getCookie();
   const userId = cookieData ? cookieData.userId : '';
   const groupId = cookieData ? cookieData.groupId : '';
+  const client = cookieData ? cookieData.client : '';
+  const uid = cookieData ? cookieData.uid : '';
+  const accessToken = cookieData ? cookieData.accessToken : '';
+  
   console.log("userId, groupId");
-  console.log(userId, groupId);
+  console.log(userId, groupId,client);
   const { data, error } = useSWR(
     `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/stock_items/alarms`,
     fetcher
@@ -161,7 +165,7 @@ const Header = () => {
         <Nav as="nav" height="56px" alignItems="center">
         {(() => {
         // 認証していたらアイコンを表示
-        if (userId && groupId) {
+        if (userId && groupId && client) {
           return (
           <>
             <NavLink>

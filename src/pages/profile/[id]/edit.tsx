@@ -19,6 +19,7 @@ import {
 } from "@mui/material/"
 import axios from "axios"
 import Cookies from "js-cookie"
+import { getCookie } from "lib/getCookie";
 
 // const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -30,6 +31,10 @@ const ProfileEdit = () => {
   const router = useRouter();
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const cookieData = getCookie();
+  const userId = cookieData ? cookieData.userId : '';
+  const groupId = cookieData ? cookieData.groupId : '';
+  const client = cookieData ? cookieData.client : '';
   
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -38,22 +43,28 @@ const ProfileEdit = () => {
       baseURL: `${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/`,
       headers: {
         "content-type": "application/json",
+        "uid": cookieData?.uid || "",
+        "client": cookieData?.client || "",
+        "access-token": cookieData?.accessToken || "",
       },
     });
     (async () => {
       setIsError(false);
       setErrorMessage("");
+      const profile = {
+        ...(data.get("name") && { name: data.get("name") }),
+        ...(data.get("nickname") && { nickname: data.get("nickname") }),
+      };
       return await axiosInstance
-        .post("profiles", {
-          name: data.get("name"),
-          nickname: data.get("nickname"),
+        .patch(`profiles/${userId}`, {
+          profile
         })
         .then(function (response) {
-          router.push("/profile/1");
+          router.push(`/profile/${userId}`);
         })
         .catch(function (error) {
           setIsError(true);
-          setErrorMessage(error.response.data.errors[0]);
+          setErrorMessage("エラーが発生しました。");
         });
       })();
   }
@@ -67,11 +78,14 @@ const ProfileEdit = () => {
           alignItems="center"
           flexDirection={{ base: 'column', md: 'row' }}
         >
-          <Box width="100%">
+          <Box width="100%" paddingTop={5}>
+          <Flex alignItems="center" justifyContent="center">
             <Typography component="h1" variant="h5">
               プロフィール編集
             </Typography>
-            <Box component="form" onSubmit={handleSubmit}>
+            </Flex>
+            <Box component="form" onSubmit={handleSubmit} marginTop={5}>
+            <Flex alignItems="center" justifyContent="center">
               <TextField
                 id="name"
                 label="名前"
@@ -86,24 +100,29 @@ const ProfileEdit = () => {
                 autoComplete="nickname"
                 autoFocus
               />
+            </Flex>
+            <Flex alignItems="center" justifyContent="center">
               <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 3, mb: 2,backgroundColor: '#ff7f50' }}
               >
-                新規登録
+                編集
               </Button>
+              </Flex>
+              <Flex alignItems="center" justifyContent="center">
               {isError ? (
                 <Alert
                   onClose={() => {
                     setIsError(false);
-                    setErrorMessage("");
+                    setErrorMessage("エラーが発生しました。");
                   }}
                   severity="error"
                 >
                   {errorMessage}
                 </Alert>
               ) : null}
+              </Flex>
             </Box>
           </Box>
         </Flex>

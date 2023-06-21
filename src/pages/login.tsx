@@ -115,83 +115,82 @@ const Login = () => {
   return (
     <Layout>
       <Toaster />
-    <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
-      <Flex
-        width={{ base: '100%', md: '1040px' }}
-        justifyContent="space-between"
-        alignItems="center"
-        flexDirection={{ base: 'column', md: 'row' }}
-      >
-        <Box width="100%">
-        
-        
-    <Container component="main" maxWidth="xs">
-      <Box>
-        <Typography component="h1" variant="h5">
-          ログイン
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit}>
-          <TextField
-            id="email"
-            label="メールアドレス"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            name="password"
-            label="パスワード"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            ログイン
-          </Button>
-          {isError ? (
-            <Alert
-              onClose={() => {
-                setIsError(false);
-                setErrorMessage("");
-              }}
-              severity="error"
-            >
-              {errorMessage}
-            </Alert>
-          ) : null}
-        </Box>
-
-        <Box component="form" onSubmit={handleGuestSubmit}>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            ゲストログイン
-          </Button>
-          {isError ? (
-            <Alert
-              onClose={() => {
-                setIsError(false);
-                setErrorMessage("");
-              }}
-              severity="error"
-            >
-              {errorMessage}
-            </Alert>
-          ) : null}
-        </Box>
-      </Box>
-    </Container>
-
-    </Box>
+      <Flex padding={2} justifyContent="center" alignItems="center" backgroundColor="grayBack">
+        <Container component="main" maxWidth="xs">
+          <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}  marginTop={5}>
+            <Typography component="h1" variant="h5" sx={{textAlign: 'center'}}>
+              ログイン
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit}>
+            <Box sx={{display: 'flex', justifyContent: 'center'}} marginTop={5}>
+              <TextField
+                id="email"
+                label="メールアドレス"
+                name="email"
+                autoComplete="email"
+                autoFocus
+              />
+            </Box>
+            <Box sx={{display: 'flex', justifyContent: 'center'}}>
+              <TextField
+                name="password"
+                label="パスワード"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+            </Box>
+              <Box marginTop={2} sx={{display: 'flex', justifyContent: 'center'}}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ 
+                    mt: 3, 
+                    mb: 2, 
+                    backgroundColor: '#ff7f50', 
+                    color: '#ffffff',
+                    '&:hover': {
+                      backgroundColor: '#e06d3d',
+                    }
+                  }}
+                >
+                  ログイン
+                </Button>
+              </Box>
+              {isError ? (
+                <Alert
+                  onClose={() => {
+                    setIsError(false);
+                    setErrorMessage("");
+                  }}
+                  severity="error"
+                >
+                  {errorMessage}
+                </Alert>
+              ) : null}
+            </Box>
+  
+            <Box marginTop={2} component="form" onSubmit={handleGuestSubmit} sx={{display: 'flex', justifyContent: 'center'}}>
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{ 
+                  mt: 3, 
+                  mb: 2, 
+                  backgroundColor: '#ff7f50', 
+                  color: '#ffffff',
+                  '&:hover': {
+                    backgroundColor: '#e06d3d',
+                  }
+                }}
+              >
+                ゲストログイン
+              </Button>
+            </Box>
+          </Box>
+        </Container>
       </Flex>
-    </Flex>
-  </Layout>
+    </Layout>
   );
 };
 

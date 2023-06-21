@@ -109,7 +109,7 @@ const Cart: NextPage = () => {
       // この部分でレスポンスを処理します...
       const data = await response.json();
       toast.success("カートから削除しました！");
-      mutate('`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/carts');
+      mutate(`${process.env.NEXT_PUBLIC_API_ROOT_URL}/api/v1/carts`);
     } catch (error) {
       console.error('An error occurred:', error);
       toast.error("削除できません！");
@@ -338,7 +338,6 @@ const Cart: NextPage = () => {
                   <Grid item xs={12} sm={6} md={4} key={cart.id}>
                     <Card  sx={{
                       maxWidth: 500,
-                      boxShadow: '2px 5px 10px -5px #9e9e9e',
                       borderRadius: 10,
                       }}>
                     <CardMedia

@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import styled from 'styled-components'
 import Button from 'components/atoms/Button'
-import ShapeImage from 'components/atoms/ShapeImage'
 import Text from 'components/atoms/Text'
 import Box from 'components/layout/Box'
 import Flex from 'components/layout/Flex'

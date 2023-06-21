@@ -4,7 +4,7 @@ import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, Promis
 import useSWR, { useSWRConfig } from "swr";
 import { GetServerSideProps } from "next";
 import { withAuthServerSideProps } from "lib/auth";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Switch, Tooltip, styled } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Switch, Tooltip, Typography, styled } from "@mui/material";
 import IOSSwitch from "components/atoms/IosSwitch";
 import { getCookie } from "lib/getCookie";
 import toast, { Toaster } from "react-hot-toast";
@@ -19,6 +19,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SvgIcon } from '@mui/material'
 import DescriptionIcon from '@mui/icons-material/Description';
 import React from "react";
+import { Inventory } from "@mui/icons-material";
 
 
 const fetcher = (url: string) => {
@@ -335,6 +336,10 @@ const StockItem: NextPage = () => {
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <Box width="100%"  marginBottom={{ base: '2', md: '0' }}>
+          <Flex alignItems="center" justifyContent="center">
+            <Inventory style={{ color: "#4B4B4B" }} />
+            <Typography style={{ color: "#4B4B4B", marginLeft: "0.5rem" }}>ストック一覧</Typography>
+          </Flex>
             <Flex justifyContent="flex-end">
               <Box padding="10px">
                 <Grid component="label" container alignItems="center" spacing={1}>

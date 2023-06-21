@@ -64,7 +64,7 @@ const Request: NextPage = (props: any) => {
 
   return (
     <Layout>
-      <Flex padding={2} justifyContent="center" backgroundColor="grayBack">
+      <Flex padding={2} justifyContent="center">
         <Flex
           width={{ base: '100%', md: '1040px' }}
           justifyContent="space-between"

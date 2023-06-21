@@ -2,6 +2,7 @@ import { AppProps } from 'next/app'
 import Head from 'next/head'
 import React from 'react'
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
+import ErrorBoundary from './ErrorBoundary';
 
 // グローバルのスタイル
 const GlobalStyle = createGlobalStyle`
@@ -31,7 +32,7 @@ ol, ul {
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <>
+    <ErrorBoundary>
       <Head>
         <meta key="charset" name="charset" content="utf-8" />
         <meta
@@ -55,7 +56,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       </Head>
       <GlobalStyle />
       <Component {...pageProps} />
-    </>
+    </ErrorBoundary>
   )
 }
 

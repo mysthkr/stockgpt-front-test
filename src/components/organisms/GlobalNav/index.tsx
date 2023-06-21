@@ -111,6 +111,8 @@ const GlobalNav = () => {
           Cookies.remove("uid");
           Cookies.remove("client");
           Cookies.remove("access-token");
+          Cookies.remove("id");
+          Cookies.remove("group_id");
           setIsError(true);
           setErrorMessage(error.response.data.errors[0]);
         });

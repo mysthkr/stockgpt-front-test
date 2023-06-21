@@ -155,12 +155,21 @@ const Profile = (props: any, id: number) => {
             <p>同居人数: {props.data[0].roommate_number}人</p>
             <p>在住県: {props.data[0].prefecture}</p>
             <p>グループ名: {props.data[0].group_name}</p>
-            <Link href={`${process.env.NEXT_PUBLIC_LOCAL_ROOT_URL}/profile/${userId}/edit`}>プロフィール編集</Link>
-            <Button onClick={handleOpenDialog} variant="contained" startIcon={<Delete />}>
-              退会
-            </Button>
-            <Link href={`${process.env.NEXT_PUBLIC_LOCAL_ROOT_URL}/group/${groupId}`}>グループ</Link>
-            <RequestNavLink />
+            <Flex alignItems="center" justifyContent="center" marginTop="1rem" marginBottom="1rem" >
+              <Link href={`${process.env.NEXT_PUBLIC_LOCAL_ROOT_URL}/profile/${userId}/edit`} color={'#ff7f50'}>プロフィール編集</Link>
+            </Flex>
+            
+            <Flex alignItems="center" justifyContent="center" marginTop="1rem" marginBottom="1rem">
+              <Link href={`${process.env.NEXT_PUBLIC_LOCAL_ROOT_URL}/group/${groupId}`}>グループ</Link>
+            </Flex>
+            <Flex alignItems="center" justifyContent="center" marginTop="1rem" marginBottom="1rem">
+              <RequestNavLink />
+            </Flex>
+            <Flex alignItems="center" justifyContent="center" marginTop="1rem" marginBottom="1rem">
+              <Button onClick={handleOpenDialog} variant="contained" startIcon={<Delete />} sx={{ backgroundColor: '#ff0000', color: '#ffffff' }}>
+                退会
+              </Button>
+            </Flex>
           </Box>
         </Flex>
       </Flex>

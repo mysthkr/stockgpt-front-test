@@ -247,11 +247,14 @@ const Group= (props: any, id: number) => {
       </Typography>
       {renderData}
   <Box sx={{ paddingLeft: '1rem', marginTop: '1rem' }}>
+  <Flex alignItems="center" justifyContent="center" marginTop="1rem" marginBottom="1rem">
     <Link href={`${process.env.NEXT_PUBLIC_LOCAL_ROOT_URL}/profile/${userId}/edit`}>
       プロフィール編集
     </Link>
+  </Flex>
+    <Flex alignItems="center" justifyContent="center" marginTop="1rem" marginBottom="1rem">
     <Button onClick={handleOpenDialog}>グループ招待</Button>
-    
+    </Flex>
   </Box>
 </Box>
         </Flex>

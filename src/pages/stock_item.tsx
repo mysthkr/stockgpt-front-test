@@ -60,6 +60,9 @@ const StockItem: NextPage = () => {
   const [isSorted, setIsSorted] = useState(false);
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
 
+  console.log("fadaaaaaaaaa")
+  console.log(data)
+
   interface SelectedRow {
     id: number;
     picture: string | null;
@@ -74,6 +77,7 @@ const StockItem: NextPage = () => {
     price: number;
     alarm_date: string;
     quantity: number;
+    product_picture: any;
   }
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -303,18 +307,22 @@ const StockItem: NextPage = () => {
         </ThemeProvider>
         <Dialog open={isDialogOpen} onClose={handleDialogClose}>
           <DialogTitle>詳細</DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ minWidth: '400px', minHeight: '200px' }}>
             {selectedRow && (
               <div>
                 <p>アイテム名：{selectedRow.item_name}</p>
                 <p>アラーム日：{selectedRow.alarm_date}</p>
                 <p>カテゴリー：{selectedRow.category_name}</p>
                 <p>サブカテゴリー：{selectedRow.sub_category_name}</p>
-                <p>Criteria: {selectedRow.criteria}</p>
-                <p>Price: {selectedRow.price}</p>
-                <p>Quantity: {selectedRow.quantity}</p>
-                <p>{selectedRow.picture}</p>
-                <Button variant="contained" color="error" onClick={() => deleteClick(selectedRow.id)}>削除</Button>
+                <p>使用目安（日）: {selectedRow.criteria}</p>
+                <p>値段: {selectedRow.price}</p>
+                <p>数量: {selectedRow.quantity}</p>
+                {selectedRow.picture ? (
+                  <img style={{ width: '250px', height: '200px' }} src={`/images/${selectedRow.picture}`} alt={selectedRow.item_name} />
+                ) : (
+                  <img style={{ width: '250px', height: '200px' }} src="/images/default.png" alt="Default" />
+                )}
+                
               </div>
             )}
           </DialogContent>

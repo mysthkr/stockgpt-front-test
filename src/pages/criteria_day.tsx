@@ -245,7 +245,7 @@ const Cart: NextPage = () => {
             {errorMessage}
           </Alert>
         ) : null}
-        <Button color="success" onClick={addClick} disabled={isLoading}>
+        <Button color="success" onClick={addClick} disabled={isLoading} sx={{ backgroundColor: '#ff7f50' , color: 'white', margin: '15px 5px'}}>
           {isLoading ? 'Loading...' : '登録'}
         </Button>
       </Paper>

@@ -20,6 +20,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Card, CardContent } from '@mui/material';
 import { Head } from "next/document";
 import { ShoppingCart } from "@mui/icons-material";
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 
 const fetcher = (url: string) => {
@@ -67,9 +68,6 @@ const ToBuyList: NextPage = () => {
 
   const [value, setValue] = useState(0);
 
-  
-  console.log("data");
-  console.log(data);
   // START HERE for fetchAllCriteriaData
   const fetchAllData = async () => {
     const cookieData = getCookie();
@@ -233,6 +231,10 @@ const ToBuyList: NextPage = () => {
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <Box width="100%">
+          <Flex alignItems="center" justifyContent="center">
+              <EditNoteIcon style={{ color: '#4B4B4B', fontSize: 38}} />
+              <Typography style={{ color: "#4B4B4B", marginTop: "25px", marginBottom: "25px" }}>買い物リスト</Typography>
+            </Flex>
           <Toaster />
           <AddCartButton
             className="text-white bg-indigo-500 border-0 py-2 px-8 
@@ -241,7 +243,7 @@ const ToBuyList: NextPage = () => {
           />
             {data.data.map((to_buy_list: any) => (
               <CustomTypography
-                sx={{ fontFamily: 'Cinzel Decorative' }}
+                sx={{ fontFamily: 'Cinzel Decorative' , marginTop: "25px"}}
               >
                 <li className='p-4' key={to_buy_list.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
                 <CustomTypography variant="h5" className={selectedItems.some((item) => item.to_buy_list_id === to_buy_list.id)? 'selected' : ''}

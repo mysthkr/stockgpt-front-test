@@ -27,6 +27,11 @@ const theme = createTheme({
   },
 });
 
+const StyledLink = styled.a`
+  margin-right: 25px;
+  color: #4B4B4B;
+`;
+
 
 // ヘッダーのルート
 const HeaderRoot = styled.header`
@@ -209,14 +214,14 @@ const Header = () => {
           return (
             <>
               <Link href="/login" passHref>
-                <Anchor as="a">
+                <StyledLink>
                   ログイン
-                </Anchor>
+                </StyledLink>
               </Link>
               <Link href="/signup" passHref>
-                <Anchor as="a">
+                <StyledLink>
                   新規登録
-                </Anchor>
+                </StyledLink>
               </Link>
             </>
           )

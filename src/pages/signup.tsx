@@ -11,6 +11,8 @@ import {
 import axios from "axios"
 import Cookies from "js-cookie"
 import toast, { Toaster } from "react-hot-toast";
+import Flex from 'components/layout/Flex'
+import Layout from 'components/templates/Layout'
 
 const Signup = () => {
   const router = useRouter();
@@ -84,7 +86,7 @@ const Signup = () => {
                       toast.success("登録に成功しました！");
                       toast.success("ログイン画面に遷移します！");
                       setTimeout(() => {
-                        router.push("/");
+                        router.push("/login");
                       }, 1000);
                     })
                     .catch(function (error) {
@@ -108,49 +110,67 @@ const Signup = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Layout>
       <Toaster />
-      <Box>
-        <Typography component="h1" variant="h5">
-          サインアップ
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit}>
-          <TextField
-            id="email"
-            label="メールアドレス"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            name="password"
-            label="パスワード"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={isError} 
-          >
-            新規登録
-          </Button>
-          {isError ? (
-            <Alert
-              onClose={() => {
-                setIsError(false);
-                setErrorMessage("");
-              }}
-              severity="error"
-            >
-              {errorMessage}
-            </Alert>
-          ) : null}
-        </Box>
-      </Box>
-    </Container>
+      <Flex padding={2} justifyContent="center" alignItems="center" backgroundColor="grayBack">
+        <Container component="main" maxWidth="xs">
+          <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}} marginTop={5}>
+            <Typography component="h1" variant="h5" sx={{textAlign: 'center'}}>
+              サインアップ
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit}>
+              <Box sx={{display: 'flex', justifyContent: 'center'}} marginTop={5}>
+                <TextField
+                  id="email"
+                  label="メールアドレス"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                />
+              </Box>
+              <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                <TextField
+                  name="password"
+                  label="パスワード"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                />
+              </Box>
+              <Box marginTop={2} sx={{display: 'flex', justifyContent: 'center'}}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ 
+                    mt: 3, 
+                    mb: 2, 
+                    backgroundColor: '#ff7f50', 
+                    color: '#ffffff',
+                    '&:hover': {
+                      backgroundColor: '#e06d3d',
+                    }
+                  }}
+                  disabled={isError}
+                >
+                  新規登録
+                </Button>
+              </Box>
+              {isError ? (
+                <Alert
+                  onClose={() => {
+                    setIsError(false);
+                    setErrorMessage("");
+                  }}
+                  severity="error"
+                >
+                  {errorMessage}
+                </Alert>
+              ) : null}
+            </Box>
+          </Box>
+        </Container>
+      </Flex>
+    </Layout>
   );
 };
 

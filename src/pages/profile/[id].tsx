@@ -155,11 +155,11 @@ const Profile = (props: any, id: number) => {
             <p>同居人数: {props.data[0].roommate_number}人</p>
             <p>在住県: {props.data[0].prefecture}</p>
             <p>グループ名: {props.data[0].group_name}</p>
-            <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/profile/${userId}/edit`}>プロフィール編集</Link>
+            <Link href={`${process.env.NEXT_PUBLIC_LOCAL_ROOT_URL}/profile/${userId}/edit`}>プロフィール編集</Link>
             <Button onClick={handleOpenDialog} variant="contained" startIcon={<Delete />}>
               退会
             </Button>
-            <Link href={`${process.env.NEXT_PUBLIC_API_ROOT_URL}/group/${groupId}`}>グループ</Link>
+            <Link href={`${process.env.NEXT_PUBLIC_LOCAL_ROOT_URL}/group/${groupId}`}>グループ</Link>
             <RequestNavLink />
           </Box>
         </Flex>

@@ -8,10 +8,6 @@ import Layout from '../components/templates/Layout'
 import Link from 'next/link'
 import { Card, CardContent, Typography } from "@mui/material";
 
-
-export const getServerSideProps: GetServerSideProps =
-  withAuthServerSideProps("/api/v1/home");
-
 const Home = () => {
   return (
     <Layout>
@@ -22,7 +18,7 @@ const Home = () => {
           alignItems="center"
           flexDirection={{ base: 'column', md: 'row' }}
         >
-          <Box width={{ base: '100%', md: '40%' }} textAlign={{ base: 'center', md: 'left' }}>
+          <Box width={{ base: '100%', md: '50%' }} textAlign={{ base: 'center', md: 'left' }} >
             <Typography variant="h2" sx={{ fontSize: '24px', mb: '16px' }}>
               StockGPT - 食品と日用品の在庫管理をサポートするアプリ
             </Typography>
@@ -31,8 +27,8 @@ const Home = () => {
             </Typography>
           </Box>
 
-          <Flex justifyContent="space-between" flexWrap="wrap" width={{ base: '100%', md: '60%' }}>
-            <Card sx={{ width: '100%', mb: 4, flexBasis: { base: '100%', md: '48%' } }}>
+          <Flex justifyContent="space-between" flexWrap="wrap" width={{ base: '100%', md: '50%' }}>
+            <Card sx={{ width: { base: '100%', md: '60%' }, maxWidth: '80%', mb: 4, minHeight: '200px',padding: 2, margin: 'auto', marginTop: '5px',flexBasis: { base: '100%', md: '40%' } }}>
               <CardContent>
                 <Typography variant="h5" component="h2">
                   食品や日用品をストックで管理
@@ -42,7 +38,7 @@ const Home = () => {
                 </Typography>
               </CardContent>
             </Card>
-            <Card sx={{ width: '100%', mb: 4, flexBasis: { base: '100%', md: '48%' } }}>
+            <Card sx={{ width: { base: '100%', md: '60%' }, maxWidth: '80%', mb: 4, minHeight: '200px',padding: 2, margin: 'auto',marginTop: '5px', flexBasis: { base: '100%', md: '40%' } }}>
               <CardContent>
                 <Typography variant="h5" component="h2">
                   購入リスト機能
@@ -52,7 +48,7 @@ const Home = () => {
                 </Typography>
               </CardContent>
             </Card>
-            <Card sx={{ width: '100%', mb: 4, flexBasis: { base: '100%', md: '48%' } }}>
+            <Card sx={{ width: { base: '100%', md: '60%' }, maxWidth: '80%', mb: 4, minHeight: '200px',padding: 2, margin: 'auto', marginTop: '5px', flexBasis: { base: '100%', md: '40%' } }}>
               <CardContent>
                 <Typography variant="h5" component="h2">
                   レシピの提案
@@ -62,7 +58,7 @@ const Home = () => {
                 </Typography>
               </CardContent>
             </Card>
-            <Card sx={{ width: '100%', mb: 4, flexBasis: { base: '100%', md: '48%' } }}>
+            <Card sx={{ width: { base: '100%', md: '60%' }, maxWidth: '80%', mb: 4, minHeight: '200px',padding: 2, margin: 'auto', marginTop: '5px', flexBasis: { base: '100%', md: '40%' } }}>
               <CardContent>
                 <Typography variant="h5" component="h2">
                   カート機能
@@ -72,7 +68,7 @@ const Home = () => {
                 </Typography>
               </CardContent>
             </Card>
-            <Card sx={{ width: '100%', mb: 4, flexBasis: { base: '100%', md: '48%' } }}>
+            <Card sx={{ width: { base: '100%', md: '60%' }, maxWidth: '80%', mb: 4, minHeight: '200px',padding: 2, margin: 'auto', marginTop: '5px', flexBasis: { base: '100%', md: '40%' } }}>
               <CardContent>
                 <Typography variant="h5" component="h2">
                   在庫通知機能
@@ -82,7 +78,7 @@ const Home = () => {
                 </Typography>
               </CardContent>
             </Card>
-            <Card sx={{ width: '100%', mb: 4, flexBasis: { base: '100%', md: '48%' } }}>
+            <Card sx={{ width: { base: '100%', md: '60%' }, maxWidth: '80%', mb: 4, minHeight: '200px',padding: 2, margin: 'auto',marginTop: '5px', flexBasis: { base: '100%', md: '40%' } }}>
               <CardContent>
                 <Typography variant="h5" component="h2">
                   ログイン・新規登録
